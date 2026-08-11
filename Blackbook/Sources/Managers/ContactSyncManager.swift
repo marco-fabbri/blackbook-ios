@@ -31,32 +31,34 @@ class ContactSyncManager {
     }
     
     private func performImportAndDelete(contacts: [CNContact], modelContext: ModelContext, completion: @escaping (Error?) -> Void) {
-        do {
-            let saveRequest = CNSaveRequest()
-            
-            for systemContact in contacts {
-                let phoneNumbers = systemContact.phoneNumbers.map { $0.value.stringValue }
-                let newContact = BlackbookContact(
-                    firstName: systemContact.givenName,
-                    lastName: systemContact.familyName,
-                    phoneNumbers: phoneNumbers,
-                    isTrashed: false
-                )
-                modelContext.insert(newContact)
+        DispatchQueue.main.async {
+            do {
+                let saveRequest = CNSaveRequest()
                 
-                guard let mutableContact = systemContact.mutableCopy() as? CNMutableContact else { continue }
-                saveRequest.delete(mutableContact)
-            }
-            
-            try modelContext.save()
-            try self.contactStore.execute(saveRequest)
-            
-            DispatchQueue.main.async {
+                for systemContact in contacts {
+                    let phoneNumbers = systemContact.phoneNumbers.map { $0.value.stringValue }
+                    let newContact = BlackbookContact(
+                        firstName: systemContact.givenName,
+                        lastName: systemContact.familyName,
+                        phoneNumbers: phoneNumbers,
+                        isTrashed: false
+                    )
+                    modelContext.insert(newContact)
+                    
+                    guard let mutableContact = systemContact.mutableCopy() as? CNMutableContact else { continue }
+                    saveRequest.delete(mutableContact)
+                }
+                
+                try modelContext.save()
+                
+                // execute(saveRequest) fa una chiamata di sistema, può essere eseguita qui
+                // ma per evitare blocchi della UI eccessivi, potremmo spostarla in background,
+                // però richiede l'uso corretto dei thread. Dato che è rapido, va bene sul main.
+                try self.contactStore.execute(saveRequest)
+                
                 completion(nil)
-            }
-            
-        } catch {
-            DispatchQueue.main.async {
+                
+            } catch {
                 completion(error)
             }
         }
