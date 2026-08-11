@@ -8,5 +8,7 @@ targets:
     type: application
     platform: iOS
     sources: Blackbook/Sources
+    settings:
+      ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     info:
       path: Blackbook/Info.plist
