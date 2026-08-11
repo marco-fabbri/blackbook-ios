@@ -12,3 +12,6 @@ targets:
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     info:
       path: Blackbook/Info.plist
+      properties:
+        NSContactsUsageDescription: "Blackbook needs access to your contacts to import them and remove them from the system address book upon request."
+        NSFaceIDUsageDescription: "Blackbook uses Face ID or Touch ID to secure your private address book."

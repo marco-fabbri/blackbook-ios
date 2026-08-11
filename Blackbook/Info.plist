@@ -18,5 +18,9 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Blackbook needs access to your contacts to import them and remove them from the system address book upon request.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Blackbook uses Face ID or Touch ID to secure your private address book.</string>
 </dict>
 </plist>
