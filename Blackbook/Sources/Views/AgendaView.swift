@@ -54,6 +54,7 @@ struct AgendaView: View {
             }
             .sheet(isPresented: $showingContactPicker) {
                 ContactPickerManager { result in
+                    showingContactPicker = false
                     switch result {
                     case .success(let systemContacts):
                         ContactSyncManager.shared.importAndDeleteFromSystem(
