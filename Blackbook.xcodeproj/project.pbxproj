@@ -1,0 +1,329 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		311A8B67BE9560C19489F1AE /* ContactSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653507BA76683EAD2A0A7510 /* ContactSyncManager.swift */; };
+		4FB0B7E9B1C269B78886002E /* ContactPickerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F031C3D3BF5C47B578F8A7 /* ContactPickerManager.swift */; };
+		7FECBA3C7BAAA2463237842B /* BlackbookContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0718F16B18D36B221A5D616 /* BlackbookContact.swift */; };
+		8B11B8C31A0FFD76B0C208F2 /* AgendaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 789CA353FEDD997A68E110FE /* AgendaView.swift */; };
+		A8CA093BF90E4817830ECFA3 /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87CEE025AA8E73218516D3DD /* AuthenticationManager.swift */; };
+		ECE0328616473F663DB97CA1 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B10A8B7DF1ED10B7C63267 /* App.swift */; };
+		F2FB004FFF63119B049F485D /* TrashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0D5100FE22CC460943B8DD /* TrashView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		15F031C3D3BF5C47B578F8A7 /* ContactPickerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactPickerManager.swift; sourceTree = "<group>"; };
+		3744DE7F4CFD2EF1B4D4067B /* Blackbook.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Blackbook.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		43B10A8B7DF1ED10B7C63267 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
+		653507BA76683EAD2A0A7510 /* ContactSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSyncManager.swift; sourceTree = "<group>"; };
+		789CA353FEDD997A68E110FE /* AgendaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgendaView.swift; sourceTree = "<group>"; };
+		87CEE025AA8E73218516D3DD /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
+		B0718F16B18D36B221A5D616 /* BlackbookContact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlackbookContact.swift; sourceTree = "<group>"; };
+		FE0D5100FE22CC460943B8DD /* TrashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0D2996DFFAA477FE1D17D5F5 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B0718F16B18D36B221A5D616 /* BlackbookContact.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		70FF63FDD289A1800A19D69A /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				43B10A8B7DF1ED10B7C63267 /* App.swift */,
+				98FD55F69E5A8ECE4688CE24 /* Managers */,
+				0D2996DFFAA477FE1D17D5F5 /* Models */,
+				D4E995B4C0427B6B44625992 /* Views */,
+			);
+			name = Sources;
+			path = Blackbook/Sources;
+			sourceTree = "<group>";
+		};
+		92408044C0DF4D3115300BFE = {
+			isa = PBXGroup;
+			children = (
+				70FF63FDD289A1800A19D69A /* Sources */,
+				A5A751CAF9B151C8240E5765 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		98FD55F69E5A8ECE4688CE24 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				87CEE025AA8E73218516D3DD /* AuthenticationManager.swift */,
+				653507BA76683EAD2A0A7510 /* ContactSyncManager.swift */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		A5A751CAF9B151C8240E5765 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3744DE7F4CFD2EF1B4D4067B /* Blackbook.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D4E995B4C0427B6B44625992 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				789CA353FEDD997A68E110FE /* AgendaView.swift */,
+				15F031C3D3BF5C47B578F8A7 /* ContactPickerManager.swift */,
+				FE0D5100FE22CC460943B8DD /* TrashView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		448AC1F0FAB69250A5BEF3A0 /* Blackbook */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8EF3504E8F9AB65C9CE0D3E9 /* Build configuration list for PBXNativeTarget "Blackbook" */;
+			buildPhases = (
+				4AD73BF9E229F9D3CF7FBD44 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Blackbook;
+			packageProductDependencies = (
+			);
+			productName = Blackbook;
+			productReference = 3744DE7F4CFD2EF1B4D4067B /* Blackbook.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		72342DC31969FCEF148E901C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 607D0564724739766251BBF8 /* Build configuration list for PBXProject "Blackbook" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 92408044C0DF4D3115300BFE;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = A5A751CAF9B151C8240E5765 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				448AC1F0FAB69250A5BEF3A0 /* Blackbook */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4AD73BF9E229F9D3CF7FBD44 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8B11B8C31A0FFD76B0C208F2 /* AgendaView.swift in Sources */,
+				ECE0328616473F663DB97CA1 /* App.swift in Sources */,
+				A8CA093BF90E4817830ECFA3 /* AuthenticationManager.swift in Sources */,
+				7FECBA3C7BAAA2463237842B /* BlackbookContact.swift in Sources */,
+				4FB0B7E9B1C269B78886002E /* ContactPickerManager.swift in Sources */,
+				311A8B67BE9560C19489F1AE /* ContactSyncManager.swift in Sources */,
+				F2FB004FFF63119B049F485D /* TrashView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		054B4C6391A24B3A3DAD7EBA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Blackbook/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.marcofabbri.Blackbook;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		97FEC6CD930A13A313394FD0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Blackbook/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.marcofabbri.Blackbook;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E0DF9A78358159E7E1205E33 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		FC280943BC04D84638AF1794 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		607D0564724739766251BBF8 /* Build configuration list for PBXProject "Blackbook" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FC280943BC04D84638AF1794 /* Debug */,
+				E0DF9A78358159E7E1205E33 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		8EF3504E8F9AB65C9CE0D3E9 /* Build configuration list for PBXNativeTarget "Blackbook" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				97FEC6CD930A13A313394FD0 /* Debug */,
+				054B4C6391A24B3A3DAD7EBA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 72342DC31969FCEF148E901C /* Project object */;
+}

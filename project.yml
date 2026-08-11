@@ -1,0 +1,12 @@
+name: Blackbook
+options:
+  bundleIdPrefix: com.marcofabbri
+  deploymentTarget:
+    iOS: "17.0"
+targets:
+  Blackbook:
+    type: application
+    platform: iOS
+    sources: Blackbook/Sources
+    info:
+      path: Blackbook/Info.plist
