@@ -19,6 +19,7 @@
 		9E178AFDE2DD33DD59EE0076 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43496402E497946264311FCA /* SettingsView.swift */; };
 		A8CA093BF90E4817830ECFA3 /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87CEE025AA8E73218516D3DD /* AuthenticationManager.swift */; };
 		C9EF05311E4A42D80FC348C1 /* ContactDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31ABCF41598E898638512B51 /* ContactDetailView.swift */; };
+		CF0562E5F3532243556D12ED /* ContactEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEE0558294CCAF7A5A09C3B7 /* ContactEditView.swift */; };
 		ECE0328616473F663DB97CA1 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B10A8B7DF1ED10B7C63267 /* App.swift */; };
 		F2FB004FFF63119B049F485D /* TrashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0D5100FE22CC460943B8DD /* TrashView.swift */; };
 /* End PBXBuildFile section */
@@ -37,6 +38,7 @@
 		5D2464C38EF76F5DF6B88A12 /* TrashViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashViewModel.swift; sourceTree = "<group>"; };
 		789CA353FEDD997A68E110FE /* AgendaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgendaView.swift; sourceTree = "<group>"; };
 		87CEE025AA8E73218516D3DD /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
+		AEE0558294CCAF7A5A09C3B7 /* ContactEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactEditView.swift; sourceTree = "<group>"; };
 		B0718F16B18D36B221A5D616 /* BlackbookContact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlackbookContact.swift; sourceTree = "<group>"; };
 		FE0D5100FE22CC460943B8DD /* TrashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -104,6 +106,7 @@
 			children = (
 				789CA353FEDD997A68E110FE /* AgendaView.swift */,
 				31ABCF41598E898638512B51 /* ContactDetailView.swift */,
+				AEE0558294CCAF7A5A09C3B7 /* ContactEditView.swift */,
 				15F031C3D3BF5C47B578F8A7 /* ContactPickerManager.swift */,
 				43496402E497946264311FCA /* SettingsView.swift */,
 				FE0D5100FE22CC460943B8DD /* TrashView.swift */,
@@ -193,6 +196,7 @@
 				A8CA093BF90E4817830ECFA3 /* AuthenticationManager.swift in Sources */,
 				7FECBA3C7BAAA2463237842B /* BlackbookContact.swift in Sources */,
 				C9EF05311E4A42D80FC348C1 /* ContactDetailView.swift in Sources */,
+				CF0562E5F3532243556D12ED /* ContactEditView.swift in Sources */,
 				4FB0B7E9B1C269B78886002E /* ContactPickerManager.swift in Sources */,
 				37C06993380607BF01EE9085 /* ContactSyncService.swift in Sources */,
 				4AC34856BC51E81DFD9FF529 /* DatabaseUpgrader.swift in Sources */,
@@ -212,7 +216,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Blackbook/Blackbook.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				INFOPLIST_FILE = Blackbook/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -231,7 +235,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Blackbook/Blackbook.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				INFOPLIST_FILE = Blackbook/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

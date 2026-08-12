@@ -1,41 +1,113 @@
 import SwiftUI
 import SwiftData
 import Contacts
-import ContactsUI
 
 struct ContactDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.presentationMode) private var presentationMode
     
-    var blackbookContact: BlackbookContact
+    @Bindable var blackbookContact: BlackbookContact
     @State private var showingRestoreError = false
     @State private var showingRestoreConfirm = false
+    @State private var showingEditSheet = false
     @State private var errorMessage = ""
     
-    var systemContact: CNContact? {
-        if let data = blackbookContact.contactData,
-           let contact = try? NSKeyedUnarchiver.unarchivedObject(ofClass: CNContact.self, from: data) {
-            return contact
-        }
-        return nil
-    }
-    
     var body: some View {
-        VStack {
-            if let contact = systemContact {
-                SystemContactDetailView(contact: contact)
-            } else {
-                Text("Dettagli originali non disponibili")
-                    .foregroundColor(.secondary)
+        ScrollView {
+            VStack(spacing: 20) {
+                // Header
+                VStack(spacing: 12) {
+                    if let data = blackbookContact.thumbnailData, let uiImage = UIImage(data: data) {
+                        Image(uiImage: uiImage)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 100, height: 100)
+                            .clipShape(Circle())
+                    } else {
+                        Image(systemName: "person.crop.circle.fill")
+                            .resizable()
+                            .frame(width: 100, height: 100)
+                            .foregroundColor(.gray)
+                    }
+                    
+                    Text("\(blackbookContact.firstName) \(blackbookContact.lastName)")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.top, 20)
+                
+                // Quick Actions
+                HStack(spacing: 24) {
+                    if let firstPhone = blackbookContact.phoneNumbers.first {
+                        QuickActionButton(title: "Messaggio", systemImage: "message.fill", color: .blue) {
+                            if let url = URL(string: "sms://\(firstPhone.replacingOccurrences(of: " ", with: ""))") {
+                                UIApplication.shared.open(url)
+                            }
+                        }
+                        
+                        QuickActionButton(title: "Chiama", systemImage: "phone.fill", color: .green) {
+                            if let url = URL(string: "tel://\(firstPhone.replacingOccurrences(of: " ", with: ""))") {
+                                UIApplication.shared.open(url)
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal)
+                
+                // Phone Numbers List
+                VStack(spacing: 0) {
+                    ForEach(blackbookContact.phoneNumbers, id: \.self) { phone in
+                        VStack(alignment: .leading) {
+                            Text("Cellulare") // default label
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Text(phone)
+                                .font(.body)
+                                .foregroundColor(.primary)
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color(UIColor.secondarySystemGroupedBackground))
+                        
+                        if phone != blackbookContact.phoneNumbers.last {
+                            Divider()
+                                .padding(.leading)
+                        }
+                    }
+                }
+                .cornerRadius(10)
+                .padding(.horizontal)
+                
+                // Extra actions
+                VStack(spacing: 0) {
+                    Button(action: { showingRestoreConfirm = true }) {
+                        Text("Riporta su iOS")
+                            .foregroundColor(.blue)
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .background(Color(UIColor.secondarySystemGroupedBackground))
+                }
+                .cornerRadius(10)
+                .padding(.horizontal)
+                .padding(.top, 20)
+                
+                Spacer()
             }
         }
-        .navigationTitle(blackbookContact.firstName)
+        .background(Color(UIColor.systemGroupedBackground))
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: { showingRestoreConfirm = true }) {
-                    Label("Riporta su iOS", systemImage: "arrow.up.doc")
+                Button("Modifica") {
+                    showingEditSheet = true
                 }
             }
+        }
+        .sheet(isPresented: $showingEditSheet) {
+            ContactEditView(blackbookContact: blackbookContact)
         }
         .alert("Errore", isPresented: $showingRestoreError) {
             Button("OK", role: .cancel) { }
@@ -65,15 +137,25 @@ struct ContactDetailView: View {
     }
 }
 
-struct SystemContactDetailView: UIViewControllerRepresentable {
-    var contact: CNContact
+struct QuickActionButton: View {
+    let title: String
+    let systemImage: String
+    let color: Color
+    let action: () -> Void
     
-    func makeUIViewController(context: Context) -> CNContactViewController {
-        let vc = CNContactViewController(forUnknownContact: contact)
-        vc.allowsEditing = false
-        vc.allowsActions = true // Permette di chiamare/messaggiare se possibile
-        return vc
+    var body: some View {
+        Button(action: action) {
+            VStack {
+                Image(systemName: systemImage)
+                    .font(.title2)
+                Text(title)
+                    .font(.caption)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(Color(UIColor.secondarySystemGroupedBackground))
+            .foregroundColor(color)
+            .cornerRadius(10)
+        }
     }
-    
-    func updateUIViewController(_ uiViewController: CNContactViewController, context: Context) { }
 }
