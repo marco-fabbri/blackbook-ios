@@ -96,11 +96,6 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Contatti", systemImage: "person.crop.circle")
                 }
-            
-            TrashView()
-                .tabItem {
-                    Label("Trash", systemImage: "trash")
-                }
                 
             SettingsView()
                 .tabItem {

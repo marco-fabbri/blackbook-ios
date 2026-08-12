@@ -12,53 +12,51 @@ struct TrashView: View {
     @State private var currentEditMode: EditMode = .inactive
 
     var body: some View {
-        NavigationView {
-            mainContent
-                .environment(\.editMode, $currentEditMode)
-                // Single Delete Confirm
-                .alert("Elimina definitivamente", isPresented: $viewModel.showingSingleDeleteConfirm) {
-                    Button("Annulla", role: .cancel) { }
-                    Button("Elimina", role: .destructive) {
-                        if let contact = viewModel.contactToActOn {
-                            viewModel.permanentlyDelete(contact, context: modelContext)
-                        }
+        mainContent
+            .environment(\.editMode, $currentEditMode)
+            // Single Delete Confirm
+            .alert("Elimina definitivamente", isPresented: $viewModel.showingSingleDeleteConfirm) {
+                Button("Annulla", role: .cancel) { }
+                Button("Elimina", role: .destructive) {
+                    if let contact = viewModel.contactToActOn {
+                        viewModel.permanentlyDelete(contact, context: modelContext)
                     }
-                } message: {
-                    Text("Vuoi eliminare questo contatto in modo permanente? L'azione non può essere annullata.")
                 }
-                // Single Restore Confirm
-                .alert("Ripristina contatto", isPresented: $viewModel.showingSingleRestoreConfirm) {
-                    Button("Annulla", role: .cancel) { }
-                    Button("Ripristina") {
-                        if let contact = viewModel.contactToActOn {
-                            viewModel.restoreContact(contact, context: modelContext)
-                        }
+            } message: {
+                Text("Vuoi eliminare questo contatto in modo permanente? L'azione non può essere annullata.")
+            }
+            // Single Restore Confirm
+            .alert("Ripristina contatto", isPresented: $viewModel.showingSingleRestoreConfirm) {
+                Button("Annulla", role: .cancel) { }
+                Button("Ripristina") {
+                    if let contact = viewModel.contactToActOn {
+                        viewModel.restoreContact(contact, context: modelContext)
                     }
-                } message: {
-                    Text("Vuoi ripristinare questo contatto nell'Agenda?")
                 }
-                // Batch Delete Confirm
-                .alert("Elimina selezionati", isPresented: $viewModel.showingBatchDeleteConfirm) {
-                    Button("Annulla", role: .cancel) { }
-                    Button("Elimina tutti", role: .destructive) {
-                        viewModel.batchDelete(trashedContacts: trashedContacts, context: modelContext, editMode: $currentEditMode)
-                    }
-                } message: {
-                    Text("Vuoi eliminare definitivamente \(viewModel.selectedContactIDs.count) contatti? L'azione non può essere annullata.")
+            } message: {
+                Text("Vuoi ripristinare questo contatto nell'Agenda?")
+            }
+            // Batch Delete Confirm
+            .alert("Elimina selezionati", isPresented: $viewModel.showingBatchDeleteConfirm) {
+                Button("Annulla", role: .cancel) { }
+                Button("Elimina tutti", role: .destructive) {
+                    viewModel.batchDelete(trashedContacts: trashedContacts, context: modelContext, editMode: $currentEditMode)
                 }
-                // Batch Restore Confirm
-                .alert("Ripristina selezionati", isPresented: $viewModel.showingBatchRestoreConfirm) {
-                    Button("Annulla", role: .cancel) { }
-                    Button("Ripristina tutti") {
-                        viewModel.batchRestore(trashedContacts: trashedContacts, context: modelContext, editMode: $currentEditMode)
-                    }
-                } message: {
-                    Text("Vuoi ripristinare \(viewModel.selectedContactIDs.count) contatti nell'Agenda?")
+            } message: {
+                Text("Vuoi eliminare definitivamente \(viewModel.selectedContactIDs.count) contatti? L'azione non può essere annullata.")
+            }
+            // Batch Restore Confirm
+            .alert("Ripristina selezionati", isPresented: $viewModel.showingBatchRestoreConfirm) {
+                Button("Annulla", role: .cancel) { }
+                Button("Ripristina tutti") {
+                    viewModel.batchRestore(trashedContacts: trashedContacts, context: modelContext, editMode: $currentEditMode)
                 }
-                .onDisappear {
-                    currentEditMode = .inactive
-                }
-        }
+            } message: {
+                Text("Vuoi ripristinare \(viewModel.selectedContactIDs.count) contatti nell'Agenda?")
+            }
+            .onDisappear {
+                currentEditMode = .inactive
+            }
     }
     
     @ViewBuilder
@@ -120,8 +118,14 @@ struct TrashView: View {
         .navigationTitle("Cestino")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                EditButton()
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    withAnimation {
+                        currentEditMode = currentEditMode.isEditing ? .inactive : .active
+                    }
+                }) {
+                    Text(currentEditMode.isEditing ? "Fine" : "Modifica")
+                }
             }
         }
     }

@@ -139,7 +139,21 @@ struct AgendaView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                EditButton()
+                HStack(spacing: 16) {
+                    Button(action: {
+                        withAnimation {
+                            currentEditMode = currentEditMode.isEditing ? .inactive : .active
+                        }
+                    }) {
+                        Text(currentEditMode.isEditing ? "Fine" : "Modifica")
+                    }
+                    
+                    if currentEditMode.isEditing == false {
+                        NavigationLink(destination: TrashView()) {
+                            Image(systemName: "trash")
+                        }
+                    }
+                }
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 if currentEditMode.isEditing == false {
