@@ -10,3 +10,8 @@ When working on this project, `xcodegen` is used to manage and generate the Xcod
 - **NEVER** recommend deleting the app from the device/simulator to resolve CoreData/SwiftData schema crashes if the app holds data that acts as the sole source of truth (e.g., contacts that were removed from the iOS system).
 - Deleting the app destroys its sandbox and all local data permanently.
 - Always evaluate if a schema change can be handled via automatic lightweight migration (e.g., by adding new fields as Optionals) before suggesting destructive actions. If data loss is unavoidable, you MUST explicitly warn the user and wait for their confirmation.
+
+# SwiftUI Best Practices
+
+- **Prevent Type-Check Timeouts**: NEVER write complex, deeply nested view hierarchies directly inside a `List` or `ForEach` closure (especially when combining conditionals and complex modifiers like `.swipeActions`). 
+- ALWAYS extract the row or cell content into a separate, dedicated `View` struct. This keeps the compiler fast and prevents the "unable to type-check this expression in reasonable time" error.
