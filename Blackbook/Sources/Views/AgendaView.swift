@@ -8,112 +8,87 @@ struct AgendaView: View {
     @AppStorage("showListImages") private var showImages = true
     @AppStorage("sortOrder") private var sortOrder = "Cognome"
     
-    @State private var showingContactPicker = false
-    @State private var showingError = false
-    @State private var errorMessage = ""
-    
-    // Batch operations - Using UUIDs to match the List's selection type inferrence
-    @State private var selectedContactIDs = Set<UUID>()
+    @StateObject private var viewModel = AgendaViewModel()
     @Environment(\.editMode) private var editMode
     
-    // Confirmations
-    @State private var showingSingleDeleteConfirm = false
-    @State private var contactToDelete: BlackbookContact?
-    
-    @State private var showingBatchDeleteConfirm = false
-    @State private var showingBatchRestoreConfirm = false
-    
-    var sortedContacts: [BlackbookContact] {
-        allContacts.sorted {
-            if sortOrder == "Nome" {
-                return $0.sortName < $1.sortName
-            } else {
-                return $0.sortName < $1.sortName
-            }
-        }
-    }
-    
-    var groupedContacts: [String: [BlackbookContact]] {
-        Dictionary(grouping: sortedContacts, by: { $0.sortInitial })
-    }
-    
-    var sortedKeys: [String] {
-        groupedContacts.keys.sorted()
-    }
-
     var body: some View {
         NavigationView {
             mainContent
-                .sheet(isPresented: $showingContactPicker) {
+                .sheet(isPresented: $viewModel.showingContactPicker) {
                     ContactPickerManager { result in
-                        showingContactPicker = false
+                        viewModel.showingContactPicker = false
                         switch result {
                         case .success(let systemContacts):
-                            ContactSyncManager.shared.importAndDeleteFromSystem(
-                                contacts: systemContacts,
-                                modelContext: modelContext
-                            ) { error in
-                                if let error = error {
-                                    self.errorMessage = error.localizedDescription
-                                    self.showingError = true
+                            Task {
+                                do {
+                                    try await ContactSyncService().importAndDeleteFromSystem(
+                                        contacts: systemContacts,
+                                        modelContext: modelContext
+                                    )
+                                } catch {
+                                    viewModel.errorMessage = error.localizedDescription
+                                    viewModel.showingError = true
                                 }
                             }
                         case .failure(let error):
-                            self.errorMessage = error.localizedDescription
-                            self.showingError = true
+                            viewModel.errorMessage = error.localizedDescription
+                            viewModel.showingError = true
                         }
                     }
                 }
                 // Error Alert
-                .alert("Errore", isPresented: $showingError) {
+                .alert("Errore", isPresented: $viewModel.showingError) {
                     Button("OK", role: .cancel) { }
                 } message: {
-                    Text(errorMessage)
+                    Text(viewModel.errorMessage)
                 }
                 // Single Delete Confirm
-                .alert("Sposta nel cestino", isPresented: $showingSingleDeleteConfirm) {
+                .alert("Sposta nel cestino", isPresented: $viewModel.showingSingleDeleteConfirm) {
                     Button("Annulla", role: .cancel) { }
                     Button("Sposta", role: .destructive) {
-                        if let contact = contactToDelete {
-                            moveToTrash(contact)
+                        if let contact = viewModel.contactToActOn {
+                            viewModel.trashContact(contact, context: modelContext)
                         }
                     }
                 } message: {
                     Text("Vuoi spostare questo contatto nel cestino?")
                 }
                 // Batch Delete Confirm
-                .alert("Sposta selezionati", isPresented: $showingBatchDeleteConfirm) {
+                .alert("Sposta selezionati", isPresented: $viewModel.showingBatchDeleteConfirm) {
                     Button("Annulla", role: .cancel) { }
                     Button("Sposta", role: .destructive) {
-                        batchTrash()
+                        viewModel.batchTrash(allContacts: allContacts, context: modelContext, editMode: editMode)
                     }
                 } message: {
-                    Text("Vuoi spostare \(selectedContactIDs.count) contatti nel cestino?")
+                    Text("Vuoi spostare \(viewModel.selectedContactIDs.count) contatti nel cestino?")
                 }
                 // Batch Restore Confirm
-                .alert("Riporta su iOS", isPresented: $showingBatchRestoreConfirm) {
+                .alert("Riporta su iOS", isPresented: $viewModel.showingBatchRestoreConfirm) {
                     Button("Annulla", role: .cancel) { }
                     Button("Riporta") {
-                        batchRestore()
+                        viewModel.batchRestore(allContacts: allContacts, context: modelContext, editMode: editMode)
                     }
                 } message: {
-                    Text("Vuoi riportare \(selectedContactIDs.count) contatti nella rubrica di sistema?")
+                    Text("Vuoi riportare \(viewModel.selectedContactIDs.count) contatti nella rubrica di sistema?")
                 }
         }
     }
     
     @ViewBuilder
     private var mainContent: some View {
-        List(selection: $selectedContactIDs) {
-            ForEach(sortedKeys, id: \.self) { key in
+        let grouped = viewModel.groupedContacts(from: allContacts, sortOrder: sortOrder)
+        let keys = viewModel.sortedKeys(for: grouped)
+        
+        List(selection: $viewModel.selectedContactIDs) {
+            ForEach(keys, id: \.self) { key in
                 Section(header: Text(key)) {
-                    ForEach(groupedContacts[key] ?? []) { contact in
+                    ForEach(grouped[key] ?? []) { contact in
                         AgendaCell(
                             contact: contact,
                             showImages: showImages,
                             onDelete: {
-                                contactToDelete = contact
-                                showingSingleDeleteConfirm = true
+                                viewModel.contactToActOn = contact
+                                viewModel.showingSingleDeleteConfirm = true
                             }
                         )
                     }
@@ -131,64 +106,23 @@ struct AgendaView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 if editMode?.wrappedValue.isEditing == true {
                     HStack {
-                        Button(action: { showingBatchRestoreConfirm = true }) {
+                        Button(action: { viewModel.showingBatchRestoreConfirm = true }) {
                             Image(systemName: "arrow.up.doc")
                         }
-                        .disabled(selectedContactIDs.isEmpty)
+                        .disabled(viewModel.selectedContactIDs.isEmpty)
                         
-                        Button(action: { showingBatchDeleteConfirm = true }) {
+                        Button(action: { viewModel.showingBatchDeleteConfirm = true }) {
                             Image(systemName: "trash")
-                                .foregroundColor(selectedContactIDs.isEmpty ? .gray : .red)
+                                .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .red)
                         }
-                        .disabled(selectedContactIDs.isEmpty)
+                        .disabled(viewModel.selectedContactIDs.isEmpty)
                     }
                 } else {
-                    Button(action: { showingContactPicker = true }) {
+                    Button(action: { viewModel.showingContactPicker = true }) {
                         Label("Add", systemImage: "plus")
                     }
                 }
             }
-        }
-    }
-    
-    private func moveToTrash(_ contact: BlackbookContact) {
-        contact.isTrashed = true
-        try? modelContext.save()
-    }
-    
-    private func batchTrash() {
-        let contactsToTrash = allContacts.filter { selectedContactIDs.contains($0.id) }
-        for contact in contactsToTrash {
-            contact.isTrashed = true
-        }
-        try? modelContext.save()
-        selectedContactIDs.removeAll()
-        editMode?.wrappedValue = .inactive
-    }
-    
-    private func batchRestore() {
-        let contactsToRestore = allContacts.filter { selectedContactIDs.contains($0.id) }
-        var errors = [String]()
-        
-        let dispatchGroup = DispatchGroup()
-        
-        for contact in contactsToRestore {
-            dispatchGroup.enter()
-            ContactSyncManager.shared.restoreToSystem(blackbookContact: contact, modelContext: modelContext) { error in
-                if let error = error {
-                    errors.append(error.localizedDescription)
-                }
-                dispatchGroup.leave()
-            }
-        }
-        
-        dispatchGroup.notify(queue: .main) {
-            if !errors.isEmpty {
-                self.errorMessage = "Alcuni contatti non sono stati ripristinati: \n" + errors.joined(separator: "\n")
-                self.showingError = true
-            }
-            self.selectedContactIDs.removeAll()
-            self.editMode?.wrappedValue = .inactive
         }
     }
 }

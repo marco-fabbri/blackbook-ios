@@ -7,12 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		311A8B67BE9560C19489F1AE /* ContactSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653507BA76683EAD2A0A7510 /* ContactSyncManager.swift */; };
+		01E26E65E3C42CE4CF13AEF4 /* AgendaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE4CB9F3FD7886A79112A35 /* AgendaViewModel.swift */; };
+		37C06993380607BF01EE9085 /* ContactSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C439E5BD89D01C81F31C212 /* ContactSyncService.swift */; };
 		4AC34856BC51E81DFD9FF529 /* DatabaseUpgrader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D5E74D66CE3061ACE4BACFB /* DatabaseUpgrader.swift */; };
 		4B9200955F48BBC2F11E880F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3DC76DEA80F5CAA937033253 /* Assets.xcassets */; };
 		4FB0B7E9B1C269B78886002E /* ContactPickerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F031C3D3BF5C47B578F8A7 /* ContactPickerManager.swift */; };
 		7FECBA3C7BAAA2463237842B /* BlackbookContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0718F16B18D36B221A5D616 /* BlackbookContact.swift */; };
 		8B11B8C31A0FFD76B0C208F2 /* AgendaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 789CA353FEDD997A68E110FE /* AgendaView.swift */; };
+		8FCAE21E694808084315966B /* TrashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2464C38EF76F5DF6B88A12 /* TrashViewModel.swift */; };
 		9E178AFDE2DD33DD59EE0076 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43496402E497946264311FCA /* SettingsView.swift */; };
 		A8CA093BF90E4817830ECFA3 /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87CEE025AA8E73218516D3DD /* AuthenticationManager.swift */; };
 		C9EF05311E4A42D80FC348C1 /* ContactDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31ABCF41598E898638512B51 /* ContactDetailView.swift */; };
@@ -22,13 +24,15 @@
 
 /* Begin PBXFileReference section */
 		15F031C3D3BF5C47B578F8A7 /* ContactPickerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactPickerManager.swift; sourceTree = "<group>"; };
+		2C439E5BD89D01C81F31C212 /* ContactSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSyncService.swift; sourceTree = "<group>"; };
 		31ABCF41598E898638512B51 /* ContactDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDetailView.swift; sourceTree = "<group>"; };
-		3744DE7F4CFD2EF1B4D4067B /* Blackbook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blackbook.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3744DE7F4CFD2EF1B4D4067B /* Blackbook.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Blackbook.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D5E74D66CE3061ACE4BACFB /* DatabaseUpgrader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseUpgrader.swift; sourceTree = "<group>"; };
 		3DC76DEA80F5CAA937033253 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		43496402E497946264311FCA /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		43B10A8B7DF1ED10B7C63267 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
-		653507BA76683EAD2A0A7510 /* ContactSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSyncManager.swift; sourceTree = "<group>"; };
+		5AE4CB9F3FD7886A79112A35 /* AgendaViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgendaViewModel.swift; sourceTree = "<group>"; };
+		5D2464C38EF76F5DF6B88A12 /* TrashViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashViewModel.swift; sourceTree = "<group>"; };
 		789CA353FEDD997A68E110FE /* AgendaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgendaView.swift; sourceTree = "<group>"; };
 		87CEE025AA8E73218516D3DD /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
 		B0718F16B18D36B221A5D616 /* BlackbookContact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlackbookContact.swift; sourceTree = "<group>"; };
@@ -44,6 +48,14 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		531B804CEBEBEF51B8348851 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				2C439E5BD89D01C81F31C212 /* ContactSyncService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		70FF63FDD289A1800A19D69A /* Sources */ = {
 			isa = PBXGroup;
 			children = (
@@ -51,6 +63,8 @@
 				3DC76DEA80F5CAA937033253 /* Assets.xcassets */,
 				98FD55F69E5A8ECE4688CE24 /* Managers */,
 				0D2996DFFAA477FE1D17D5F5 /* Models */,
+				531B804CEBEBEF51B8348851 /* Services */,
+				DD8CA8FB9C8A35CDA3B74A2F /* ViewModels */,
 				D4E995B4C0427B6B44625992 /* Views */,
 			);
 			name = Sources;
@@ -69,7 +83,6 @@
 			isa = PBXGroup;
 			children = (
 				87CEE025AA8E73218516D3DD /* AuthenticationManager.swift */,
-				653507BA76683EAD2A0A7510 /* ContactSyncManager.swift */,
 				3D5E74D66CE3061ACE4BACFB /* DatabaseUpgrader.swift */,
 			);
 			path = Managers;
@@ -93,6 +106,15 @@
 				FE0D5100FE22CC460943B8DD /* TrashView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		DD8CA8FB9C8A35CDA3B74A2F /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				5AE4CB9F3FD7886A79112A35 /* AgendaViewModel.swift */,
+				5D2464C38EF76F5DF6B88A12 /* TrashViewModel.swift */,
+			);
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -124,6 +146,8 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
 			};
 			buildConfigurationList = 607D0564724739766251BBF8 /* Build configuration list for PBXProject "Blackbook" */;
 			developmentRegion = en;
@@ -161,15 +185,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				8B11B8C31A0FFD76B0C208F2 /* AgendaView.swift in Sources */,
+				01E26E65E3C42CE4CF13AEF4 /* AgendaViewModel.swift in Sources */,
 				ECE0328616473F663DB97CA1 /* App.swift in Sources */,
 				A8CA093BF90E4817830ECFA3 /* AuthenticationManager.swift in Sources */,
 				7FECBA3C7BAAA2463237842B /* BlackbookContact.swift in Sources */,
 				C9EF05311E4A42D80FC348C1 /* ContactDetailView.swift in Sources */,
 				4FB0B7E9B1C269B78886002E /* ContactPickerManager.swift in Sources */,
-				311A8B67BE9560C19489F1AE /* ContactSyncManager.swift in Sources */,
+				37C06993380607BF01EE9085 /* ContactSyncService.swift in Sources */,
 				4AC34856BC51E81DFD9FF529 /* DatabaseUpgrader.swift in Sources */,
 				9E178AFDE2DD33DD59EE0076 /* SettingsView.swift in Sources */,
 				F2FB004FFF63119B049F485D /* TrashView.swift in Sources */,
+				8FCAE21E694808084315966B /* TrashViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -181,7 +207,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = 76GQ89LDSG;
 				INFOPLIST_FILE = Blackbook/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -198,7 +223,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = 76GQ89LDSG;
 				INFOPLIST_FILE = Blackbook/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
