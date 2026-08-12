@@ -17,8 +17,8 @@ final class AgendaViewModel: ObservableObject {
     
     private let syncService: ContactSyncService
     
-    init(syncService: ContactSyncService = ContactSyncService()) {
-        self.syncService = syncService
+    init(syncService: ContactSyncService? = nil) {
+        self.syncService = syncService ?? ContactSyncService()
     }
     
     // Formatting & Grouping

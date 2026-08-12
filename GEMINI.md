@@ -12,7 +12,7 @@ Your code and technical decisions must strictly adhere to the following standard
 
 - **Autonomous Compilation**: Before completing any task or instructing the user to run the app, you MUST autonomously verify that the project compiles without errors.
 - **Command**: Use the following command to compile the project in the background, bypassing any local `xcode-select` limitations:
-  `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project Blackbook.xcodeproj -scheme Blackbook -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=latest' build`
+  `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project Blackbook.xcodeproj -scheme Blackbook -destination 'generic/platform=iOS Simulator' build`
 - **Zero-Error Policy**: Do not ask the user to test the app until you have resolved all compilation errors you discover during your self-verification step.
 
 # XcodeGen Rules
