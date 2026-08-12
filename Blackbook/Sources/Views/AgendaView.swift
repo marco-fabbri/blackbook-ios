@@ -12,8 +12,8 @@ struct AgendaView: View {
     @State private var showingError = false
     @State private var errorMessage = ""
     
-    // Batch operations
-    @State private var selectedContacts = Set<BlackbookContact>()
+    // Batch operations - Using UUIDs to match the List's selection type inferrence
+    @State private var selectedContactIDs = Set<UUID>()
     @Environment(\.editMode) private var editMode
     
     // Confirmations
@@ -43,21 +43,18 @@ struct AgendaView: View {
 
     var body: some View {
         NavigationView {
-            List(selection: $selectedContacts) {
+            List(selection: $selectedContactIDs) {
                 ForEach(sortedKeys, id: \.self) { key in
                     Section(header: Text(key)) {
                         ForEach(groupedContacts[key] ?? []) { contact in
-                            NavigationLink(destination: ContactDetailView(blackbookContact: contact)) {
-                                AgendaRowView(contact: contact, showImages: showImages)
-                            }
-                            .swipeActions {
-                                Button(role: .destructive) {
+                            AgendaCell(
+                                contact: contact,
+                                showImages: showImages,
+                                onDelete: {
                                     contactToDelete = contact
                                     showingSingleDeleteConfirm = true
-                                } label: {
-                                    Label("Trash", systemImage: "trash")
                                 }
-                            }
+                            )
                         }
                     }
                 }
@@ -76,13 +73,13 @@ struct AgendaView: View {
                             Button(action: { showingBatchRestoreConfirm = true }) {
                                 Image(systemName: "arrow.up.doc")
                             }
-                            .disabled(selectedContacts.isEmpty)
+                            .disabled(selectedContactIDs.isEmpty)
                             
                             Button(action: { showingBatchDeleteConfirm = true }) {
                                 Image(systemName: "trash")
-                                    .foregroundColor(selectedContacts.isEmpty ? .gray : .red)
+                                    .foregroundColor(selectedContactIDs.isEmpty ? .gray : .red)
                             }
-                            .disabled(selectedContacts.isEmpty)
+                            .disabled(selectedContactIDs.isEmpty)
                         }
                     } else {
                         Button(action: { showingContactPicker = true }) {
@@ -135,7 +132,7 @@ struct AgendaView: View {
                     batchTrash()
                 }
             } message: {
-                Text("Vuoi spostare \(selectedContacts.count) contatti nel cestino?")
+                Text("Vuoi spostare \(selectedContactIDs.count) contatti nel cestino?")
             }
             // Batch Restore Confirm
             .alert("Riporta su iOS", isPresented: $showingBatchRestoreConfirm) {
@@ -144,7 +141,7 @@ struct AgendaView: View {
                     batchRestore()
                 }
             } message: {
-                Text("Vuoi riportare \(selectedContacts.count) contatti nella rubrica di sistema?")
+                Text("Vuoi riportare \(selectedContactIDs.count) contatti nella rubrica di sistema?")
             }
         }
     }
@@ -155,16 +152,17 @@ struct AgendaView: View {
     }
     
     private func batchTrash() {
-        for contact in selectedContacts {
+        let contactsToTrash = allContacts.filter { selectedContactIDs.contains($0.id) }
+        for contact in contactsToTrash {
             contact.isTrashed = true
         }
         try? modelContext.save()
-        selectedContacts.removeAll()
+        selectedContactIDs.removeAll()
         editMode?.wrappedValue = .inactive
     }
     
     private func batchRestore() {
-        let contactsToRestore = Array(selectedContacts)
+        let contactsToRestore = allContacts.filter { selectedContactIDs.contains($0.id) }
         var errors = [String]()
         
         let dispatchGroup = DispatchGroup()
@@ -184,15 +182,35 @@ struct AgendaView: View {
                 self.errorMessage = "Alcuni contatti non sono stati ripristinati: \n" + errors.joined(separator: "\n")
                 self.showingError = true
             }
-            self.selectedContacts.removeAll()
+            self.selectedContactIDs.removeAll()
             self.editMode?.wrappedValue = .inactive
         }
     }
 }
 
+// Extracted cell to prevent type-check timeouts and keep compilation fast
+struct AgendaCell: View {
+    let contact: BlackbookContact
+    let showImages: Bool
+    let onDelete: () -> Void
+    
+    var body: some View {
+        NavigationLink(destination: ContactDetailView(blackbookContact: contact)) {
+            AgendaRowView(contact: contact, showImages: showImages)
+        }
+        .swipeActions {
+            Button(role: .destructive) {
+                onDelete()
+            } label: {
+                Label("Trash", systemImage: "trash")
+            }
+        }
+    }
+}
+
 struct AgendaRowView: View {
-    var contact: BlackbookContact
-    var showImages: Bool
+    let contact: BlackbookContact
+    let showImages: Bool
     
     var body: some View {
         HStack {

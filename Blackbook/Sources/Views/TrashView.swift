@@ -8,8 +8,8 @@ struct TrashView: View {
     @AppStorage("showListImages") private var showImages = true
     @AppStorage("sortOrder") private var sortOrder = "Cognome"
     
-    // Batch operations
-    @State private var selectedContacts = Set<BlackbookContact>()
+    // Batch operations - Using UUIDs to match the List's selection type inferrence
+    @State private var selectedContactIDs = Set<UUID>()
     @Environment(\.editMode) private var editMode
     
     // Confirmations
@@ -32,26 +32,20 @@ struct TrashView: View {
 
     var body: some View {
         NavigationView {
-            List(selection: $selectedContacts) {
+            List(selection: $selectedContactIDs) {
                 ForEach(sortedContacts) { contact in
-                    TrashRowView(contact: contact, showImages: showImages)
-                    .swipeActions(edge: .trailing) {
-                        Button(role: .destructive) {
+                    TrashCell(
+                        contact: contact,
+                        showImages: showImages,
+                        onDelete: {
                             contactToActOn = contact
                             showingSingleDeleteConfirm = true
-                        } label: {
-                            Label("Delete", systemImage: "xmark.bin")
-                        }
-                    }
-                    .swipeActions(edge: .leading) {
-                        Button {
+                        },
+                        onRestore: {
                             contactToActOn = contact
                             showingSingleRestoreConfirm = true
-                        } label: {
-                            Label("Restore", systemImage: "arrow.uturn.backward")
                         }
-                        .tint(.green)
-                    }
+                    )
                 }
             }
             .listStyle(PlainListStyle())
@@ -67,13 +61,13 @@ struct TrashView: View {
                             Button(action: { showingBatchRestoreConfirm = true }) {
                                 Image(systemName: "arrow.uturn.backward")
                             }
-                            .disabled(selectedContacts.isEmpty)
+                            .disabled(selectedContactIDs.isEmpty)
                             
                             Button(action: { showingBatchDeleteConfirm = true }) {
                                 Image(systemName: "xmark.bin")
-                                    .foregroundColor(selectedContacts.isEmpty ? .gray : .red)
+                                    .foregroundColor(selectedContactIDs.isEmpty ? .gray : .red)
                             }
-                            .disabled(selectedContacts.isEmpty)
+                            .disabled(selectedContactIDs.isEmpty)
                         }
                     }
                 }
@@ -107,7 +101,7 @@ struct TrashView: View {
                     batchDelete()
                 }
             } message: {
-                Text("Vuoi eliminare definitivamente \(selectedContacts.count) contatti? L'azione non può essere annullata.")
+                Text("Vuoi eliminare definitivamente \(selectedContactIDs.count) contatti? L'azione non può essere annullata.")
             }
             // Batch Restore Confirm
             .alert("Ripristina selezionati", isPresented: $showingBatchRestoreConfirm) {
@@ -116,7 +110,7 @@ struct TrashView: View {
                     batchRestore()
                 }
             } message: {
-                Text("Vuoi ripristinare \(selectedContacts.count) contatti nell'Agenda?")
+                Text("Vuoi ripristinare \(selectedContactIDs.count) contatti nell'Agenda?")
             }
         }
     }
@@ -132,27 +126,56 @@ struct TrashView: View {
     }
     
     private func batchDelete() {
-        for contact in selectedContacts {
+        let contactsToDelete = trashedContacts.filter { selectedContactIDs.contains($0.id) }
+        for contact in contactsToDelete {
             modelContext.delete(contact)
         }
         try? modelContext.save()
-        selectedContacts.removeAll()
+        selectedContactIDs.removeAll()
         editMode?.wrappedValue = .inactive
     }
     
     private func batchRestore() {
-        for contact in selectedContacts {
+        let contactsToRestore = trashedContacts.filter { selectedContactIDs.contains($0.id) }
+        for contact in contactsToRestore {
             contact.isTrashed = false
         }
         try? modelContext.save()
-        selectedContacts.removeAll()
+        selectedContactIDs.removeAll()
         editMode?.wrappedValue = .inactive
     }
 }
 
+// Extracted cell to prevent type-check timeouts and keep compilation fast
+struct TrashCell: View {
+    let contact: BlackbookContact
+    let showImages: Bool
+    let onDelete: () -> Void
+    let onRestore: () -> Void
+    
+    var body: some View {
+        TrashRowView(contact: contact, showImages: showImages)
+            .swipeActions(edge: .trailing) {
+                Button(role: .destructive) {
+                    onDelete()
+                } label: {
+                    Label("Delete", systemImage: "xmark.bin")
+                }
+            }
+            .swipeActions(edge: .leading) {
+                Button {
+                    onRestore()
+                } label: {
+                    Label("Restore", systemImage: "arrow.uturn.backward")
+                }
+                .tint(.green)
+            }
+    }
+}
+
 struct TrashRowView: View {
-    var contact: BlackbookContact
-    var showImages: Bool
+    let contact: BlackbookContact
+    let showImages: Bool
     
     var body: some View {
         HStack {
