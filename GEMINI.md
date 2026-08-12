@@ -8,6 +8,13 @@ Your code and technical decisions must strictly adhere to the following standard
 - **Concurrency & Thread Safety**: Use modern Swift Concurrency (`async/await`, `Task`, `Actors`) where possible. Strictly ensure that all UI updates and SwiftData `ModelContext` accesses occur on the `MainActor` or main thread. Cover edge cases like race conditions.
 - **Robustness**: Do not write "happy path only" code. Handle errors gracefully, provide fallbacks, and never assume an optional unwrap will succeed without validation.
 
+# Self-Verification & Testing
+
+- **Autonomous Compilation**: Before completing any task or instructing the user to run the app, you MUST autonomously verify that the project compiles without errors.
+- **Command**: Use the following command to compile the project in the background, bypassing any local `xcode-select` limitations:
+  `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project Blackbook.xcodeproj -scheme Blackbook -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=latest' build`
+- **Zero-Error Policy**: Do not ask the user to test the app until you have resolved all compilation errors you discover during your self-verification step.
+
 # XcodeGen Rules
 
 When working on this project, `xcodegen` is used to manage and generate the Xcode project.
