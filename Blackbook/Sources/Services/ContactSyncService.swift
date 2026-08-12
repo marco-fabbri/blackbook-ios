@@ -43,9 +43,15 @@ final class ContactSyncService {
             // Refetch the contact just to get the thumbnail image data
             var thumbnail: Data? = systemContact.thumbnailImageData
             if thumbnail == nil {
-                let keys = [CNContactThumbnailImageDataKey as CNKeyDescriptor]
+                let keys = [
+                    CNContactImageDataAvailableKey as CNKeyDescriptor,
+                    CNContactThumbnailImageDataKey as CNKeyDescriptor,
+                    CNContactImageDataKey as CNKeyDescriptor
+                ]
                 if let fetched = try? contactStore.unifiedContact(withIdentifier: systemContact.identifier, keysToFetch: keys) {
-                    thumbnail = fetched.thumbnailImageData
+                    if fetched.imageDataAvailable {
+                        thumbnail = fetched.thumbnailImageData ?? fetched.imageData
+                    }
                 }
             }
             

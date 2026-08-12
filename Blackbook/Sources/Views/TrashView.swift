@@ -55,6 +55,9 @@ struct TrashView: View {
                 } message: {
                     Text("Vuoi ripristinare \(viewModel.selectedContactIDs.count) contatti nell'Agenda?")
                 }
+                .onDisappear {
+                    currentEditMode = .inactive
+                }
         }
     }
     
@@ -87,15 +90,23 @@ struct TrashView: View {
             
             ToolbarItem(placement: .navigationBarTrailing) {
                 if currentEditMode.isEditing == true {
-                    HStack {
+                    HStack(spacing: 16) {
                         Button(action: { viewModel.showingBatchRestoreConfirm = true }) {
                             Image(systemName: "arrow.uturn.backward")
+                                .font(.system(size: 16, weight: .semibold))
+                                .frame(width: 32, height: 32)
+                                .background(Color.green.opacity(0.15))
+                                .clipShape(Circle())
                         }
                         .disabled(viewModel.selectedContactIDs.isEmpty)
                         
                         Button(action: { viewModel.showingBatchDeleteConfirm = true }) {
                             Image(systemName: "xmark.bin")
+                                .font(.system(size: 16, weight: .semibold))
+                                .frame(width: 32, height: 32)
                                 .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .red)
+                                .background(viewModel.selectedContactIDs.isEmpty ? Color.gray.opacity(0.15) : Color.red.opacity(0.15))
+                                .clipShape(Circle())
                         }
                         .disabled(viewModel.selectedContactIDs.isEmpty)
                     }

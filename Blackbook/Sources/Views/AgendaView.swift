@@ -72,6 +72,9 @@ struct AgendaView: View {
                 } message: {
                     Text("Vuoi riportare \(viewModel.selectedContactIDs.count) contatti nella rubrica di sistema?")
                 }
+                .onDisappear {
+                    currentEditMode = .inactive
+                }
         }
     }
     
@@ -106,15 +109,23 @@ struct AgendaView: View {
             
             ToolbarItem(placement: .navigationBarTrailing) {
                 if currentEditMode.isEditing == true {
-                    HStack {
+                    HStack(spacing: 16) {
                         Button(action: { viewModel.showingBatchRestoreConfirm = true }) {
                             Image(systemName: "arrow.up.doc")
+                                .font(.system(size: 16, weight: .semibold))
+                                .frame(width: 32, height: 32)
+                                .background(Color.blue.opacity(0.15))
+                                .clipShape(Circle())
                         }
                         .disabled(viewModel.selectedContactIDs.isEmpty)
                         
                         Button(action: { viewModel.showingBatchDeleteConfirm = true }) {
                             Image(systemName: "trash")
+                                .font(.system(size: 16, weight: .semibold))
+                                .frame(width: 32, height: 32)
                                 .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .red)
+                                .background(viewModel.selectedContactIDs.isEmpty ? Color.gray.opacity(0.15) : Color.red.opacity(0.15))
+                                .clipShape(Circle())
                         }
                         .disabled(viewModel.selectedContactIDs.isEmpty)
                     }
