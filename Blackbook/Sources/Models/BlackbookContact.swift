@@ -9,9 +9,15 @@ final class BlackbookContact {
     var phoneNumbers: [String]
     var isTrashed: Bool
     var contactData: Data?
+    var thumbnailData: Data?
     
     var sortName: String {
-        return lastName.isEmpty ? firstName : lastName
+        let sortOrder = UserDefaults.standard.string(forKey: "sortOrder") ?? "Cognome"
+        if sortOrder == "Nome" {
+            return firstName.isEmpty ? lastName : firstName
+        } else {
+            return lastName.isEmpty ? firstName : lastName
+        }
     }
     
     var sortInitial: String {
@@ -19,12 +25,13 @@ final class BlackbookContact {
         return String(firstChar).uppercased()
     }
     
-    init(firstName: String, lastName: String, phoneNumbers: [String], isTrashed: Bool = false, contactData: Data? = nil) {
+    init(firstName: String, lastName: String, phoneNumbers: [String], isTrashed: Bool = false, contactData: Data? = nil, thumbnailData: Data? = nil) {
         self.id = UUID()
         self.firstName = firstName
         self.lastName = lastName
         self.phoneNumbers = phoneNumbers
         self.isTrashed = isTrashed
         self.contactData = contactData
+        self.thumbnailData = thumbnailData
     }
 }

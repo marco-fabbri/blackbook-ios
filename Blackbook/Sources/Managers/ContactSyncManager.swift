@@ -44,7 +44,8 @@ class ContactSyncManager {
                         lastName: systemContact.familyName,
                         phoneNumbers: phoneNumbers,
                         isTrashed: false,
-                        contactData: data
+                        contactData: data,
+                        thumbnailData: systemContact.thumbnailImageData
                     )
                     modelContext.insert(newContact)
                     

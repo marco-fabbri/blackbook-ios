@@ -3,74 +3,175 @@ import SwiftData
 
 struct TrashView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(filter: #Predicate<BlackbookContact> { $0.isTrashed == true }, sort: \BlackbookContact.lastName) private var trashedContacts: [BlackbookContact]
+    @Query(filter: #Predicate<BlackbookContact> { $0.isTrashed == true }) private var trashedContacts: [BlackbookContact]
     
-    @State private var showingEmptyTrashConfirmation = false
+    @AppStorage("showListImages") private var showImages = true
+    @AppStorage("sortOrder") private var sortOrder = "Cognome"
+    
+    // Batch operations
+    @State private var selectedContacts = Set<BlackbookContact>()
+    @Environment(\.editMode) private var editMode
+    
+    // Confirmations
+    @State private var showingSingleDeleteConfirm = false
+    @State private var showingSingleRestoreConfirm = false
+    @State private var contactToActOn: BlackbookContact?
+    
+    @State private var showingBatchDeleteConfirm = false
+    @State private var showingBatchRestoreConfirm = false
+    
+    var sortedContacts: [BlackbookContact] {
+        trashedContacts.sorted {
+            if sortOrder == "Nome" {
+                return $0.sortName < $1.sortName
+            } else {
+                return $0.sortName < $1.sortName
+            }
+        }
+    }
 
     var body: some View {
         NavigationView {
-            List {
-                ForEach(trashedContacts) { contact in
-                    VStack(alignment: .leading) {
-                        Text("\(contact.firstName) \(contact.lastName)")
-                            .font(.headline)
-                        if let firstPhone = contact.phoneNumbers.first {
-                            Text(firstPhone)
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
+            List(selection: $selectedContacts) {
+                ForEach(sortedContacts) { contact in
+                    HStack {
+                        if showImages {
+                            if let imageData = contact.thumbnailData, let uiImage = UIImage(data: imageData) {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 40, height: 40)
+                                    .clipShape(Circle())
+                            } else {
+                                Image(systemName: "person.crop.circle.fill")
+                                    .resizable()
+                                    .frame(width: 40, height: 40)
+                                    .foregroundColor(.gray)
+                            }
+                        }
+                        
+                        VStack(alignment: .leading) {
+                            Text("\(contact.firstName) \(contact.lastName)")
+                                .font(.headline)
+                                .foregroundColor(.gray)
+                            if let firstPhone = contact.phoneNumbers.first {
+                                Text(firstPhone)
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                            }
                         }
                     }
-                    .swipeActions {
+                    .swipeActions(edge: .trailing) {
+                        Button(role: .destructive) {
+                            contactToActOn = contact
+                            showingSingleDeleteConfirm = true
+                        } label: {
+                            Label("Delete", systemImage: "xmark.bin")
+                        }
+                    }
+                    .swipeActions(edge: .leading) {
                         Button {
-                            restore(contact)
+                            contactToActOn = contact
+                            showingSingleRestoreConfirm = true
                         } label: {
                             Label("Restore", systemImage: "arrow.uturn.backward")
                         }
-                        .tint(.blue)
-                        
-                        Button(role: .destructive) {
-                            deletePermanently(contact)
-                        } label: {
-                            Label("Delete", systemImage: "trash.fill")
+                        .tint(.green)
+                    }
+                }
+            }
+            .listStyle(PlainListStyle())
+            .navigationTitle("Cestino")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    EditButton()
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    if editMode?.wrappedValue.isEditing == true {
+                        HStack {
+                            Button(action: { showingBatchRestoreConfirm = true }) {
+                                Image(systemName: "arrow.uturn.backward")
+                            }
+                            .disabled(selectedContacts.isEmpty)
+                            
+                            Button(action: { showingBatchDeleteConfirm = true }) {
+                                Image(systemName: "xmark.bin")
+                                    .foregroundColor(selectedContacts.isEmpty ? .gray : .red)
+                            }
+                            .disabled(selectedContacts.isEmpty)
                         }
                     }
                 }
             }
-            .navigationTitle("Trash")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Empty") {
-                        showingEmptyTrashConfirmation = true
+            // Single Delete Confirm
+            .alert("Elimina definitivamente", isPresented: $showingSingleDeleteConfirm) {
+                Button("Annulla", role: .cancel) { }
+                Button("Elimina", role: .destructive) {
+                    if let contact = contactToActOn {
+                        permanentlyDelete(contact)
                     }
-                    .disabled(trashedContacts.isEmpty)
-                    .foregroundColor(.red)
-                }
-            }
-            .alert("Empty Trash", isPresented: $showingEmptyTrashConfirmation) {
-                Button("Cancel", role: .cancel) { }
-                Button("Delete All", role: .destructive) {
-                    emptyTrash()
                 }
             } message: {
-                Text("Are you sure you want to permanently delete all contacts in the trash? This cannot be undone.")
+                Text("Vuoi eliminare questo contatto in modo permanente? L'azione non può essere annullata.")
+            }
+            // Single Restore Confirm
+            .alert("Ripristina contatto", isPresented: $showingSingleRestoreConfirm) {
+                Button("Annulla", role: .cancel) { }
+                Button("Ripristina", role: .default) {
+                    if let contact = contactToActOn {
+                        restoreContact(contact)
+                    }
+                }
+            } message: {
+                Text("Vuoi ripristinare questo contatto nell'Agenda?")
+            }
+            // Batch Delete Confirm
+            .alert("Elimina selezionati", isPresented: $showingBatchDeleteConfirm) {
+                Button("Annulla", role: .cancel) { }
+                Button("Elimina tutti", role: .destructive) {
+                    batchDelete()
+                }
+            } message: {
+                Text("Vuoi eliminare definitivamente \(selectedContacts.count) contatti? L'azione non può essere annullata.")
+            }
+            // Batch Restore Confirm
+            .alert("Ripristina selezionati", isPresented: $showingBatchRestoreConfirm) {
+                Button("Annulla", role: .cancel) { }
+                Button("Ripristina tutti", role: .default) {
+                    batchRestore()
+                }
+            } message: {
+                Text("Vuoi ripristinare \(selectedContacts.count) contatti nell'Agenda?")
             }
         }
     }
     
-    private func restore(_ contact: BlackbookContact) {
-        contact.isTrashed = false
-        try? modelContext.save()
-    }
-    
-    private func deletePermanently(_ contact: BlackbookContact) {
+    private func permanentlyDelete(_ contact: BlackbookContact) {
         modelContext.delete(contact)
         try? modelContext.save()
     }
     
-    private func emptyTrash() {
-        for contact in trashedContacts {
+    private func restoreContact(_ contact: BlackbookContact) {
+        contact.isTrashed = false
+        try? modelContext.save()
+    }
+    
+    private func batchDelete() {
+        for contact in selectedContacts {
             modelContext.delete(contact)
         }
         try? modelContext.save()
+        selectedContacts.removeAll()
+        editMode?.wrappedValue = .inactive
+    }
+    
+    private func batchRestore() {
+        for contact in selectedContacts {
+            contact.isTrashed = false
+        }
+        try? modelContext.save()
+        selectedContacts.removeAll()
+        editMode?.wrappedValue = .inactive
     }
 }

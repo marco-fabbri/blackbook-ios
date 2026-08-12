@@ -5,6 +5,15 @@ class AuthenticationManager: ObservableObject {
     @Published var isAuthenticated = false
     
     func authenticate() {
+        let isFaceIDEnabled = UserDefaults.standard.bool(forKey: "isFaceIDEnabled")
+        
+        if !isFaceIDEnabled {
+            DispatchQueue.main.async {
+                self.isAuthenticated = true
+            }
+            return
+        }
+        
         let context = LAContext()
         var error: NSError?
         

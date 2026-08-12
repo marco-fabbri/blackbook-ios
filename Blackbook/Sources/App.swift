@@ -4,6 +4,7 @@ import SwiftData
 @main
 struct BlackbookApp: App {
     @StateObject private var authManager = AuthenticationManager()
+    @AppStorage("appTheme") private var appTheme = "Sistema"
     
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -27,11 +28,23 @@ struct BlackbookApp: App {
                     LockScreenView(authManager: authManager)
                 }
             }
+            .preferredColorScheme(colorScheme)
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
-                authManager.isAuthenticated = false
+                let isFaceIDEnabled = UserDefaults.standard.bool(forKey: "isFaceIDEnabled")
+                if isFaceIDEnabled {
+                    authManager.isAuthenticated = false
+                }
             }
         }
         .modelContainer(sharedModelContainer)
+    }
+    
+    private var colorScheme: ColorScheme? {
+        switch appTheme {
+        case "Chiaro": return .light
+        case "Scuro": return .dark
+        default: return nil
+        }
     }
 }
 
@@ -82,6 +95,11 @@ struct MainTabView: View {
             TrashView()
                 .tabItem {
                     Label("Trash", systemImage: "trash")
+                }
+                
+            SettingsView()
+                .tabItem {
+                    Label("Impostazioni", systemImage: "gear")
                 }
         }
         .onAppear {
