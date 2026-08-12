@@ -108,8 +108,8 @@ struct MainTabView: View {
             .padding(.bottom, 60) // Make room for the custom tab bar
             
             // Custom Tab Bar
-            HStack {
-                // Left Pill (Tabs)
+            ZStack {
+                // Centered Pill (Tabs)
                 HStack(spacing: 40) {
                     TabBarButton(icon: "person.crop.circle", title: "Contatti", isSelected: selectedTab == 0) {
                         selectedTab = 0
@@ -125,24 +125,25 @@ struct MainTabView: View {
                 .clipShape(Capsule())
                 .shadow(color: Color.black.opacity(0.15), radius: 10, x: 0, y: 5)
                 
-                Spacer()
-                
                 // Right Pill (Search)
-                Button(action: {
-                    selectedTab = 0
-                    NotificationCenter.default.post(name: NSNotification.Name("ActivateSearch"), object: nil)
-                }) {
-                    VStack(spacing: 4) {
-                        Image(systemName: "magnifyingglass")
-                            .font(.system(size: 24))
-                        Text("Cerca")
-                            .font(.caption2)
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        selectedTab = 0
+                        NotificationCenter.default.post(name: NSNotification.Name("ActivateSearch"), object: nil)
+                    }) {
+                        VStack(spacing: 4) {
+                            Image(systemName: "magnifyingglass")
+                                .font(.system(size: 24))
+                            Text("Cerca")
+                                .font(.caption2)
+                        }
+                        .foregroundColor(.gray)
+                        .frame(width: 60, height: 60)
+                        .background(Color(UIColor.systemBackground))
+                        .clipShape(Circle())
+                        .shadow(color: Color.black.opacity(0.15), radius: 10, x: 0, y: 5)
                     }
-                    .foregroundColor(.gray)
-                    .frame(width: 60, height: 60)
-                    .background(Color(UIColor.systemBackground))
-                    .clipShape(Circle())
-                    .shadow(color: Color.black.opacity(0.15), radius: 10, x: 0, y: 5)
                 }
             }
             .padding(.horizontal, 20)
