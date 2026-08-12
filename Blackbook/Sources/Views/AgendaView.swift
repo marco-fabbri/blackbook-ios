@@ -11,6 +11,8 @@ struct AgendaView: View {
     
     @StateObject private var viewModel = AgendaViewModel()
     @State private var currentEditMode: EditMode = .inactive
+    @State private var showingShareSheet = false
+    @State private var shareURL: URL?
     
     var body: some View {
         NavigationView {
@@ -106,7 +108,13 @@ struct AgendaView: View {
             if currentEditMode.isEditing == true {
                 // Floating Mass Actions Bar
                 HStack(spacing: 60) {
-                    Button(action: { viewModel.showingBatchRestoreConfirm = true }) {
+                    Button(action: { 
+                        let selectedContacts = allContacts.filter { viewModel.selectedContactIDs.contains($0.id) }
+                        if let url = ExportService.shared.generateCSV(from: selectedContacts) {
+                            shareURL = url
+                            showingShareSheet = true
+                        }
+                    }) {
                         VStack(spacing: 4) {
                             Image(systemName: "arrow.up.doc")
                                 .font(.system(size: 20))
@@ -138,6 +146,11 @@ struct AgendaView: View {
         }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showingShareSheet) {
+            if let shareURL = shareURL {
+                ActivityViewController(activityItems: [shareURL])
+            }
+        }
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 HStack(spacing: 16) {

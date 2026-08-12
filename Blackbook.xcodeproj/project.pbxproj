@@ -15,6 +15,7 @@
 		4FB0B7E9B1C269B78886002E /* ContactPickerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F031C3D3BF5C47B578F8A7 /* ContactPickerManager.swift */; };
 		7FECBA3C7BAAA2463237842B /* BlackbookContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0718F16B18D36B221A5D616 /* BlackbookContact.swift */; };
 		8B11B8C31A0FFD76B0C208F2 /* AgendaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 789CA353FEDD997A68E110FE /* AgendaView.swift */; };
+		8B73F6351E9D42CAA1AE385F /* ExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 497916BE5A67322597DF69E2 /* ExportService.swift */; };
 		8FCAE21E694808084315966B /* TrashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2464C38EF76F5DF6B88A12 /* TrashViewModel.swift */; };
 		9E178AFDE2DD33DD59EE0076 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43496402E497946264311FCA /* SettingsView.swift */; };
 		A8CA093BF90E4817830ECFA3 /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87CEE025AA8E73218516D3DD /* AuthenticationManager.swift */; };
@@ -32,6 +33,7 @@
 		3DC76DEA80F5CAA937033253 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		43496402E497946264311FCA /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		43B10A8B7DF1ED10B7C63267 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
+		497916BE5A67322597DF69E2 /* ExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportService.swift; sourceTree = "<group>"; };
 		5AE4CB9F3FD7886A79112A35 /* AgendaViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgendaViewModel.swift; sourceTree = "<group>"; };
 		5D2464C38EF76F5DF6B88A12 /* TrashViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashViewModel.swift; sourceTree = "<group>"; };
 		789CA353FEDD997A68E110FE /* AgendaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgendaView.swift; sourceTree = "<group>"; };
@@ -54,6 +56,7 @@
 			isa = PBXGroup;
 			children = (
 				2C439E5BD89D01C81F31C212 /* ContactSyncService.swift */,
+				497916BE5A67322597DF69E2 /* ExportService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -196,6 +199,7 @@
 				4FB0B7E9B1C269B78886002E /* ContactPickerManager.swift in Sources */,
 				37C06993380607BF01EE9085 /* ContactSyncService.swift in Sources */,
 				4AC34856BC51E81DFD9FF529 /* DatabaseUpgrader.swift in Sources */,
+				8B73F6351E9D42CAA1AE385F /* ExportService.swift in Sources */,
 				4DEF95BF8BF922402A634CF0 /* SearchView.swift in Sources */,
 				9E178AFDE2DD33DD59EE0076 /* SettingsView.swift in Sources */,
 				F2FB004FFF63119B049F485D /* TrashView.swift in Sources */,

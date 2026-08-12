@@ -2,7 +2,12 @@ import LocalAuthentication
 import Foundation
 
 class AuthenticationManager: ObservableObject {
-    @Published var isAuthenticated = false
+    @Published var isAuthenticated: Bool
+    
+    init() {
+        let isFaceIDEnabled = UserDefaults.standard.bool(forKey: "isFaceIDEnabled")
+        self.isAuthenticated = !isFaceIDEnabled
+    }
     
     func authenticate() {
         let isFaceIDEnabled = UserDefaults.standard.bool(forKey: "isFaceIDEnabled")

@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 enum AppTheme: String, CaseIterable {
     case system = "Sistema"
@@ -16,6 +17,11 @@ struct SettingsView: View {
     @AppStorage("sortOrder") private var sortOrder = SortOrder.lastName.rawValue
     @AppStorage("showListImages") private var showListImages = true
     @AppStorage("appTheme") private var appTheme = AppTheme.system.rawValue
+    
+    @Query(filter: #Predicate<BlackbookContact> { $0.isTrashed == false }) private var activeContacts: [BlackbookContact]
+    
+    @State private var showingShareSheet = false
+    @State private var shareURL: URL?
     
     var appVersion: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Sconosciuta"
@@ -44,6 +50,26 @@ struct SettingsView: View {
                     Toggle("Mostra foto nella lista", isOn: $showListImages)
                 }
                 
+                Section(header: Text("Esportazione Contatti")) {
+                    Button(action: {
+                        if let url = ExportService.shared.generateCSV(from: activeContacts) {
+                            shareURL = url
+                            showingShareSheet = true
+                        }
+                    }) {
+                        Label("Esporta in CSV (Excel)", systemImage: "tablecells")
+                    }
+                    
+                    Button(action: {
+                        if let url = ExportService.shared.generatePDF(from: activeContacts) {
+                            shareURL = url
+                            showingShareSheet = true
+                        }
+                    }) {
+                        Label("Esporta in PDF", systemImage: "doc.richtext")
+                    }
+                }
+                
                 Section(header: Text("Informazioni")) {
                     HStack {
                         Text("Versione Software")
@@ -64,6 +90,23 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Impostazioni")
+            .sheet(isPresented: $showingShareSheet) {
+                if let shareURL = shareURL {
+                    ActivityViewController(activityItems: [shareURL])
+                }
+            }
         }
     }
+}
+
+struct ActivityViewController: UIViewControllerRepresentable {
+    var activityItems: [Any]
+    var applicationActivities: [UIActivity]? = nil
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        let controller = UIActivityViewController(activityItems: activityItems, applicationActivities: applicationActivities)
+        return controller
+    }
+
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
