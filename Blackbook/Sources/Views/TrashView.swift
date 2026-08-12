@@ -65,52 +65,63 @@ struct TrashView: View {
     private var mainContent: some View {
         let sorted = viewModel.sortContacts(trashedContacts, sortOrder: sortOrder)
         
-        List(selection: $viewModel.selectedContactIDs) {
-            ForEach(sorted) { contact in
-                TrashCell(
-                    contact: contact,
-                    showImages: showImages,
-                    onDelete: {
-                        viewModel.contactToActOn = contact
-                        viewModel.showingSingleDeleteConfirm = true
-                    },
-                    onRestore: {
-                        viewModel.contactToActOn = contact
-                        viewModel.showingSingleRestoreConfirm = true
+        ZStack(alignment: .bottom) {
+            List(selection: $viewModel.selectedContactIDs) {
+                ForEach(sorted) { contact in
+                    TrashCell(
+                        contact: contact,
+                        showImages: showImages,
+                        onDelete: {
+                            viewModel.contactToActOn = contact
+                            viewModel.showingSingleDeleteConfirm = true
+                        },
+                        onRestore: {
+                            viewModel.contactToActOn = contact
+                            viewModel.showingSingleRestoreConfirm = true
+                        }
+                    )
+                }
+            }
+            .listStyle(PlainListStyle())
+            
+            if currentEditMode.isEditing == true {
+                // Floating Mass Actions Bar
+                HStack(spacing: 60) {
+                    Button(action: { viewModel.showingBatchRestoreConfirm = true }) {
+                        VStack(spacing: 4) {
+                            Image(systemName: "arrow.uturn.backward")
+                                .font(.system(size: 20))
+                            Text("Ripristina")
+                                .font(.caption)
+                        }
+                        .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .green)
                     }
-                )
+                    .disabled(viewModel.selectedContactIDs.isEmpty)
+                    
+                    Button(action: { viewModel.showingBatchDeleteConfirm = true }) {
+                        VStack(spacing: 4) {
+                            Image(systemName: "xmark.bin")
+                                .font(.system(size: 20))
+                            Text("Elimina")
+                                .font(.caption)
+                        }
+                        .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .red)
+                    }
+                    .disabled(viewModel.selectedContactIDs.isEmpty)
+                }
+                .padding(.vertical, 12)
+                .padding(.horizontal, 40)
+                .background(Color(UIColor.systemBackground).opacity(0.95))
+                .clipShape(Capsule())
+                .shadow(color: .black.opacity(0.15), radius: 10, x: 0, y: 5)
+                .padding(.bottom, 20)
             }
         }
-        .listStyle(PlainListStyle())
         .navigationTitle("Cestino")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 EditButton()
-            }
-            
-            ToolbarItem(placement: .navigationBarTrailing) {
-                if currentEditMode.isEditing == true {
-                    HStack(spacing: 16) {
-                        Button(action: { viewModel.showingBatchRestoreConfirm = true }) {
-                            Image(systemName: "arrow.uturn.backward")
-                                .font(.system(size: 16, weight: .semibold))
-                                .frame(width: 32, height: 32)
-                                .background(Color.green.opacity(0.15))
-                                .clipShape(Circle())
-                        }
-                        .disabled(viewModel.selectedContactIDs.isEmpty)
-                        
-                        Button(action: { viewModel.showingBatchDeleteConfirm = true }) {
-                            Image(systemName: "xmark.bin")
-                                .font(.system(size: 16, weight: .semibold))
-                                .frame(width: 32, height: 32)
-                                .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .red)
-                                .background(viewModel.selectedContactIDs.isEmpty ? Color.gray.opacity(0.15) : Color.red.opacity(0.15))
-                                .clipShape(Circle())
-                        }
-                        .disabled(viewModel.selectedContactIDs.isEmpty)
-                    }
-                }
             }
         }
     }

@@ -83,57 +83,79 @@ struct AgendaView: View {
         let grouped = viewModel.groupedContacts(from: allContacts, sortOrder: sortOrder)
         let keys = viewModel.sortedKeys(for: grouped)
         
-        List(selection: $viewModel.selectedContactIDs) {
-            ForEach(keys, id: \.self) { key in
-                Section(header: Text(key)) {
-                    ForEach(grouped[key] ?? []) { contact in
-                        AgendaCell(
-                            contact: contact,
-                            showImages: showImages,
-                            onDelete: {
-                                viewModel.contactToActOn = contact
-                                viewModel.showingSingleDeleteConfirm = true
-                            }
-                        )
+        ZStack(alignment: .bottom) {
+            List(selection: $viewModel.selectedContactIDs) {
+                ForEach(keys, id: \.self) { key in
+                    Section(header: Text(key)) {
+                        ForEach(grouped[key] ?? []) { contact in
+                            AgendaCell(
+                                contact: contact,
+                                showImages: showImages,
+                                onDelete: {
+                                    viewModel.contactToActOn = contact
+                                    viewModel.showingSingleDeleteConfirm = true
+                                }
+                            )
+                        }
                     }
                 }
             }
+            .listStyle(SidebarListStyle())
+            
+            if currentEditMode.isEditing == true {
+                // Floating Mass Actions Bar
+                HStack(spacing: 60) {
+                    Button(action: { viewModel.showingBatchRestoreConfirm = true }) {
+                        VStack(spacing: 4) {
+                            Image(systemName: "arrow.up.doc")
+                                .font(.system(size: 20))
+                            Text("Esporta")
+                                .font(.caption)
+                        }
+                        .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .blue)
+                    }
+                    .disabled(viewModel.selectedContactIDs.isEmpty)
+                    
+                    Button(action: { viewModel.showingBatchDeleteConfirm = true }) {
+                        VStack(spacing: 4) {
+                            Image(systemName: "trash")
+                                .font(.system(size: 20))
+                            Text("Cestina")
+                                .font(.caption)
+                        }
+                        .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .red)
+                    }
+                    .disabled(viewModel.selectedContactIDs.isEmpty)
+                }
+                .padding(.vertical, 12)
+                .padding(.horizontal, 40)
+                .background(Color(UIColor.systemBackground).opacity(0.95))
+                .clipShape(Capsule())
+                .shadow(color: .black.opacity(0.15), radius: 10, x: 0, y: 5)
+                .padding(.bottom, 20)
+            } else {
+                // FAB - Floating Action Button
+                HStack {
+                    Spacer()
+                    Button(action: { viewModel.showingContactPicker = true }) {
+                        Image(systemName: "plus")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundColor(.white)
+                            .frame(width: 56, height: 56)
+                            .background(Color.blue)
+                            .clipShape(Circle())
+                            .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 4)
+                    }
+                    .padding(.trailing, 20)
+                    .padding(.bottom, 20)
+                }
+            }
         }
-        .listStyle(SidebarListStyle())
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 EditButton()
-            }
-            
-            ToolbarItem(placement: .navigationBarTrailing) {
-                if currentEditMode.isEditing == true {
-                    HStack(spacing: 16) {
-                        Button(action: { viewModel.showingBatchRestoreConfirm = true }) {
-                            Image(systemName: "arrow.up.doc")
-                                .font(.system(size: 16, weight: .semibold))
-                                .frame(width: 32, height: 32)
-                                .background(Color.blue.opacity(0.15))
-                                .clipShape(Circle())
-                        }
-                        .disabled(viewModel.selectedContactIDs.isEmpty)
-                        
-                        Button(action: { viewModel.showingBatchDeleteConfirm = true }) {
-                            Image(systemName: "trash")
-                                .font(.system(size: 16, weight: .semibold))
-                                .frame(width: 32, height: 32)
-                                .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .red)
-                                .background(viewModel.selectedContactIDs.isEmpty ? Color.gray.opacity(0.15) : Color.red.opacity(0.15))
-                                .clipShape(Circle())
-                        }
-                        .disabled(viewModel.selectedContactIDs.isEmpty)
-                    }
-                } else {
-                    Button(action: { viewModel.showingContactPicker = true }) {
-                        Label("Add", systemImage: "plus")
-                    }
-                }
             }
         }
     }
