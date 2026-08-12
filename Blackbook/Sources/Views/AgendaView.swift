@@ -161,7 +161,9 @@ struct AgendaView: View {
             
             if currentEditMode.isEditing == true {
                 // Floating Mass Actions Bar
-                HStack(spacing: 60) {
+                HStack(spacing: 20) {
+                    Spacer()
+                    
                     Button(action: { 
                         let selectedContacts = allContacts.filter { viewModel.selectedContactIDs.contains($0.id) }
                         if let url = ExportService.shared.generateCSV(from: selectedContacts) {
@@ -173,9 +175,13 @@ struct AgendaView: View {
                             Image(systemName: "arrow.up.doc")
                                 .font(.system(size: 20))
                             Text("Esporta")
-                                .font(.caption)
+                                .font(.caption2)
                         }
                         .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .blue)
+                        .frame(width: 65, height: 65)
+                        .background(Color(UIColor.systemBackground))
+                        .clipShape(Circle())
+                        .shadow(color: .black.opacity(0.15), radius: 10, x: 0, y: 5)
                     }
                     .disabled(viewModel.selectedContactIDs.isEmpty)
                     
@@ -184,17 +190,18 @@ struct AgendaView: View {
                             Image(systemName: "trash")
                                 .font(.system(size: 20))
                             Text("Cestina")
-                                .font(.caption)
+                                .font(.caption2)
                         }
                         .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .red)
+                        .frame(width: 65, height: 65)
+                        .background(Color(UIColor.systemBackground))
+                        .clipShape(Circle())
+                        .shadow(color: .black.opacity(0.15), radius: 10, x: 0, y: 5)
                     }
                     .disabled(viewModel.selectedContactIDs.isEmpty)
+                    
+                    Spacer()
                 }
-                .padding(.vertical, 12)
-                .padding(.horizontal, 40)
-                .background(Color(UIColor.systemBackground).opacity(0.95))
-                .clipShape(Capsule())
-                .shadow(color: .black.opacity(0.15), radius: 10, x: 0, y: 5)
                 .padding(.bottom, 20)
             }
         }
