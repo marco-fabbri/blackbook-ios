@@ -133,29 +133,25 @@ struct AgendaView: View {
                 .clipShape(Capsule())
                 .shadow(color: .black.opacity(0.15), radius: 10, x: 0, y: 5)
                 .padding(.bottom, 20)
-            } else {
-                // FAB - Floating Action Button
-                HStack {
-                    Spacer()
-                    Button(action: { viewModel.showingContactPicker = true }) {
-                        Image(systemName: "plus")
-                            .font(.system(size: 24, weight: .bold))
-                            .foregroundColor(.white)
-                            .frame(width: 56, height: 56)
-                            .background(Color.blue)
-                            .clipShape(Circle())
-                            .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 4)
-                    }
-                    .padding(.trailing, 20)
-                    .padding(.bottom, 20)
-                }
             }
         }
-        .navigationTitle("")
+        .navigationTitle("Contatti")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 EditButton()
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                if currentEditMode.isEditing == false {
+                    HStack(spacing: 16) {
+                        Button(action: { /* TODO: Implement search */ }) {
+                            Image(systemName: "magnifyingglass")
+                        }
+                        Button(action: { viewModel.showingContactPicker = true }) {
+                            Image(systemName: "plus")
+                        }
+                    }
+                }
             }
         }
     }

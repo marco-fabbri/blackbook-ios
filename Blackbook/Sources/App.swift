@@ -94,7 +94,7 @@ struct MainTabView: View {
         TabView {
             AgendaView()
                 .tabItem {
-                    Label("Agenda", systemImage: "book")
+                    Label("Contatti", systemImage: "person.crop.circle")
                 }
             
             TrashView()
