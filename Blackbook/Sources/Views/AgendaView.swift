@@ -43,105 +43,110 @@ struct AgendaView: View {
 
     var body: some View {
         NavigationView {
-            List(selection: $selectedContactIDs) {
-                ForEach(sortedKeys, id: \.self) { key in
-                    Section(header: Text(key)) {
-                        ForEach(groupedContacts[key] ?? []) { contact in
-                            AgendaCell(
-                                contact: contact,
-                                showImages: showImages,
-                                onDelete: {
-                                    contactToDelete = contact
-                                    showingSingleDeleteConfirm = true
+            mainContent
+                .sheet(isPresented: $showingContactPicker) {
+                    ContactPickerManager { result in
+                        showingContactPicker = false
+                        switch result {
+                        case .success(let systemContacts):
+                            ContactSyncManager.shared.importAndDeleteFromSystem(
+                                contacts: systemContacts,
+                                modelContext: modelContext
+                            ) { error in
+                                if let error = error {
+                                    self.errorMessage = error.localizedDescription
+                                    self.showingError = true
                                 }
-                            )
-                        }
-                    }
-                }
-            }
-            .listStyle(SidebarListStyle())
-            .navigationTitle("")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    EditButton()
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    if editMode?.wrappedValue.isEditing == true {
-                        HStack {
-                            Button(action: { showingBatchRestoreConfirm = true }) {
-                                Image(systemName: "arrow.up.doc")
                             }
-                            .disabled(selectedContactIDs.isEmpty)
-                            
-                            Button(action: { showingBatchDeleteConfirm = true }) {
-                                Image(systemName: "trash")
-                                    .foregroundColor(selectedContactIDs.isEmpty ? .gray : .red)
+                        case .failure(let error):
+                            self.errorMessage = error.localizedDescription
+                            self.showingError = true
+                        }
+                    }
+                }
+                // Error Alert
+                .alert("Errore", isPresented: $showingError) {
+                    Button("OK", role: .cancel) { }
+                } message: {
+                    Text(errorMessage)
+                }
+                // Single Delete Confirm
+                .alert("Sposta nel cestino", isPresented: $showingSingleDeleteConfirm) {
+                    Button("Annulla", role: .cancel) { }
+                    Button("Sposta", role: .destructive) {
+                        if let contact = contactToDelete {
+                            moveToTrash(contact)
+                        }
+                    }
+                } message: {
+                    Text("Vuoi spostare questo contatto nel cestino?")
+                }
+                // Batch Delete Confirm
+                .alert("Sposta selezionati", isPresented: $showingBatchDeleteConfirm) {
+                    Button("Annulla", role: .cancel) { }
+                    Button("Sposta", role: .destructive) {
+                        batchTrash()
+                    }
+                } message: {
+                    Text("Vuoi spostare \(selectedContactIDs.count) contatti nel cestino?")
+                }
+                // Batch Restore Confirm
+                .alert("Riporta su iOS", isPresented: $showingBatchRestoreConfirm) {
+                    Button("Annulla", role: .cancel) { }
+                    Button("Riporta", role: .default) {
+                        batchRestore()
+                    }
+                } message: {
+                    Text("Vuoi riportare \(selectedContactIDs.count) contatti nella rubrica di sistema?")
+                }
+        }
+    }
+    
+    @ViewBuilder
+    private var mainContent: some View {
+        List(selection: $selectedContactIDs) {
+            ForEach(sortedKeys, id: \.self) { key in
+                Section(header: Text(key)) {
+                    ForEach(groupedContacts[key] ?? []) { contact in
+                        AgendaCell(
+                            contact: contact,
+                            showImages: showImages,
+                            onDelete: {
+                                contactToDelete = contact
+                                showingSingleDeleteConfirm = true
                             }
-                            .disabled(selectedContactIDs.isEmpty)
-                        }
-                    } else {
-                        Button(action: { showingContactPicker = true }) {
-                            Label("Add", systemImage: "plus")
-                        }
+                        )
                     }
                 }
             }
-            .sheet(isPresented: $showingContactPicker) {
-                ContactPickerManager { result in
-                    showingContactPicker = false
-                    switch result {
-                    case .success(let systemContacts):
-                        ContactSyncManager.shared.importAndDeleteFromSystem(
-                            contacts: systemContacts,
-                            modelContext: modelContext
-                        ) { error in
-                            if let error = error {
-                                self.errorMessage = error.localizedDescription
-                                self.showingError = true
-                            }
+        }
+        .listStyle(SidebarListStyle())
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                EditButton()
+            }
+            
+            ToolbarItem(placement: .navigationBarTrailing) {
+                if editMode?.wrappedValue.isEditing == true {
+                    HStack {
+                        Button(action: { showingBatchRestoreConfirm = true }) {
+                            Image(systemName: "arrow.up.doc")
                         }
-                    case .failure(let error):
-                        self.errorMessage = error.localizedDescription
-                        self.showingError = true
+                        .disabled(selectedContactIDs.isEmpty)
+                        
+                        Button(action: { showingBatchDeleteConfirm = true }) {
+                            Image(systemName: "trash")
+                                .foregroundColor(selectedContactIDs.isEmpty ? .gray : .red)
+                        }
+                        .disabled(selectedContactIDs.isEmpty)
+                    }
+                } else {
+                    Button(action: { showingContactPicker = true }) {
+                        Label("Add", systemImage: "plus")
                     }
                 }
-            }
-            // Error Alert
-            .alert("Errore", isPresented: $showingError) {
-                Button("OK", role: .cancel) { }
-            } message: {
-                Text(errorMessage)
-            }
-            // Single Delete Confirm
-            .alert("Sposta nel cestino", isPresented: $showingSingleDeleteConfirm) {
-                Button("Annulla", role: .cancel) { }
-                Button("Sposta", role: .destructive) {
-                    if let contact = contactToDelete {
-                        moveToTrash(contact)
-                    }
-                }
-            } message: {
-                Text("Vuoi spostare questo contatto nel cestino?")
-            }
-            // Batch Delete Confirm
-            .alert("Sposta selezionati", isPresented: $showingBatchDeleteConfirm) {
-                Button("Annulla", role: .cancel) { }
-                Button("Sposta", role: .destructive) {
-                    batchTrash()
-                }
-            } message: {
-                Text("Vuoi spostare \(selectedContactIDs.count) contatti nel cestino?")
-            }
-            // Batch Restore Confirm
-            .alert("Riporta su iOS", isPresented: $showingBatchRestoreConfirm) {
-                Button("Annulla", role: .cancel) { }
-                Button("Riporta", role: .default) {
-                    batchRestore()
-                }
-            } message: {
-                Text("Vuoi riportare \(selectedContactIDs.count) contatti nella rubrica di sistema?")
             }
         }
     }

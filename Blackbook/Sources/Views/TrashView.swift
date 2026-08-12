@@ -32,85 +32,90 @@ struct TrashView: View {
 
     var body: some View {
         NavigationView {
-            List(selection: $selectedContactIDs) {
-                ForEach(sortedContacts) { contact in
-                    TrashCell(
-                        contact: contact,
-                        showImages: showImages,
-                        onDelete: {
-                            contactToActOn = contact
-                            showingSingleDeleteConfirm = true
-                        },
-                        onRestore: {
-                            contactToActOn = contact
-                            showingSingleRestoreConfirm = true
-                        }
-                    )
-                }
-            }
-            .listStyle(PlainListStyle())
-            .navigationTitle("Cestino")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    EditButton()
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    if editMode?.wrappedValue.isEditing == true {
-                        HStack {
-                            Button(action: { showingBatchRestoreConfirm = true }) {
-                                Image(systemName: "arrow.uturn.backward")
-                            }
-                            .disabled(selectedContactIDs.isEmpty)
-                            
-                            Button(action: { showingBatchDeleteConfirm = true }) {
-                                Image(systemName: "xmark.bin")
-                                    .foregroundColor(selectedContactIDs.isEmpty ? .gray : .red)
-                            }
-                            .disabled(selectedContactIDs.isEmpty)
+            mainContent
+                // Single Delete Confirm
+                .alert("Elimina definitivamente", isPresented: $showingSingleDeleteConfirm) {
+                    Button("Annulla", role: .cancel) { }
+                    Button("Elimina", role: .destructive) {
+                        if let contact = contactToActOn {
+                            permanentlyDelete(contact)
                         }
                     }
+                } message: {
+                    Text("Vuoi eliminare questo contatto in modo permanente? L'azione non può essere annullata.")
                 }
+                // Single Restore Confirm
+                .alert("Ripristina contatto", isPresented: $showingSingleRestoreConfirm) {
+                    Button("Annulla", role: .cancel) { }
+                    Button("Ripristina", role: .default) {
+                        if let contact = contactToActOn {
+                            restoreContact(contact)
+                        }
+                    }
+                } message: {
+                    Text("Vuoi ripristinare questo contatto nell'Agenda?")
+                }
+                // Batch Delete Confirm
+                .alert("Elimina selezionati", isPresented: $showingBatchDeleteConfirm) {
+                    Button("Annulla", role: .cancel) { }
+                    Button("Elimina tutti", role: .destructive) {
+                        batchDelete()
+                    }
+                } message: {
+                    Text("Vuoi eliminare definitivamente \(selectedContactIDs.count) contatti? L'azione non può essere annullata.")
+                }
+                // Batch Restore Confirm
+                .alert("Ripristina selezionati", isPresented: $showingBatchRestoreConfirm) {
+                    Button("Annulla", role: .cancel) { }
+                    Button("Ripristina tutti", role: .default) {
+                        batchRestore()
+                    }
+                } message: {
+                    Text("Vuoi ripristinare \(selectedContactIDs.count) contatti nell'Agenda?")
+                }
+        }
+    }
+    
+    @ViewBuilder
+    private var mainContent: some View {
+        List(selection: $selectedContactIDs) {
+            ForEach(sortedContacts) { contact in
+                TrashCell(
+                    contact: contact,
+                    showImages: showImages,
+                    onDelete: {
+                        contactToActOn = contact
+                        showingSingleDeleteConfirm = true
+                    },
+                    onRestore: {
+                        contactToActOn = contact
+                        showingSingleRestoreConfirm = true
+                    }
+                )
             }
-            // Single Delete Confirm
-            .alert("Elimina definitivamente", isPresented: $showingSingleDeleteConfirm) {
-                Button("Annulla", role: .cancel) { }
-                Button("Elimina", role: .destructive) {
-                    if let contact = contactToActOn {
-                        permanentlyDelete(contact)
+        }
+        .listStyle(PlainListStyle())
+        .navigationTitle("Cestino")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                EditButton()
+            }
+            
+            ToolbarItem(placement: .navigationBarTrailing) {
+                if editMode?.wrappedValue.isEditing == true {
+                    HStack {
+                        Button(action: { showingBatchRestoreConfirm = true }) {
+                            Image(systemName: "arrow.uturn.backward")
+                        }
+                        .disabled(selectedContactIDs.isEmpty)
+                        
+                        Button(action: { showingBatchDeleteConfirm = true }) {
+                            Image(systemName: "xmark.bin")
+                                .foregroundColor(selectedContactIDs.isEmpty ? .gray : .red)
+                        }
+                        .disabled(selectedContactIDs.isEmpty)
                     }
                 }
-            } message: {
-                Text("Vuoi eliminare questo contatto in modo permanente? L'azione non può essere annullata.")
-            }
-            // Single Restore Confirm
-            .alert("Ripristina contatto", isPresented: $showingSingleRestoreConfirm) {
-                Button("Annulla", role: .cancel) { }
-                Button("Ripristina", role: .default) {
-                    if let contact = contactToActOn {
-                        restoreContact(contact)
-                    }
-                }
-            } message: {
-                Text("Vuoi ripristinare questo contatto nell'Agenda?")
-            }
-            // Batch Delete Confirm
-            .alert("Elimina selezionati", isPresented: $showingBatchDeleteConfirm) {
-                Button("Annulla", role: .cancel) { }
-                Button("Elimina tutti", role: .destructive) {
-                    batchDelete()
-                }
-            } message: {
-                Text("Vuoi eliminare definitivamente \(selectedContactIDs.count) contatti? L'azione non può essere annullata.")
-            }
-            // Batch Restore Confirm
-            .alert("Ripristina selezionati", isPresented: $showingBatchRestoreConfirm) {
-                Button("Annulla", role: .cancel) { }
-                Button("Ripristina tutti", role: .default) {
-                    batchRestore()
-                }
-            } message: {
-                Text("Vuoi ripristinare \(selectedContactIDs.count) contatti nell'Agenda?")
             }
         }
     }
