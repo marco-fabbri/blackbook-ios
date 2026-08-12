@@ -103,6 +103,7 @@ struct MainTabView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .ignoresSafeArea(edges: .bottom)
             
             // Floating iOS 27 Glass UI
             VStack(spacing: 12) {
@@ -161,7 +162,6 @@ struct MainTabView: View {
             }
             .padding(.bottom, 24)
         }
-        .edgesIgnoringSafeArea(.bottom)
         .onAppear {
             DatabaseUpgrader.upgradeLegacyContacts(modelContext: modelContext)
         }
