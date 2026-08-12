@@ -11,8 +11,7 @@ struct AgendaView: View {
     
     @StateObject private var viewModel = AgendaViewModel()
     @State private var currentEditMode: EditMode = .inactive
-    @State private var showingShareSheet = false
-    @State private var shareURL: URL?
+    @State private var shareItem: ShareItem?
     
     @State private var searchText = ""
     @State private var isSearchActive = false
@@ -172,10 +171,8 @@ struct AgendaView: View {
         }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
-        .sheet(isPresented: $showingShareSheet) {
-            if let shareURL = shareURL {
-                ActivityViewController(activityItems: [shareURL])
-            }
+        .sheet(item: $shareItem) { item in
+            ActivityViewController(activityItems: [item.url])
         }
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
@@ -199,8 +196,7 @@ struct AgendaView: View {
                         Button(action: { 
                             let selectedContacts = allContacts.filter { viewModel.selectedContactIDs.contains($0.id) }
                             if let url = ExportService.shared.generateCSV(from: selectedContacts) {
-                                shareURL = url
-                                showingShareSheet = true
+                                shareItem = ShareItem(url: url)
                             }
                         }) {
                             Image(systemName: "arrow.up.doc")

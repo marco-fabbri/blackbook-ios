@@ -12,6 +12,11 @@ enum SortOrder: String, CaseIterable {
     case lastName = "Cognome"
 }
 
+struct ShareItem: Identifiable {
+    let id = UUID()
+    let url: URL
+}
+
 struct SettingsView: View {
     @AppStorage("isFaceIDEnabled") private var isFaceIDEnabled = false
     @AppStorage("sortOrder") private var sortOrder = SortOrder.lastName.rawValue
@@ -20,8 +25,7 @@ struct SettingsView: View {
     
     @Query(filter: #Predicate<BlackbookContact> { $0.isTrashed == false }) private var activeContacts: [BlackbookContact]
     
-    @State private var showingShareSheet = false
-    @State private var shareURL: URL?
+    @State private var shareItem: ShareItem?
     
     var appVersion: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Sconosciuta"
@@ -53,8 +57,7 @@ struct SettingsView: View {
                 Section(header: Text("Esportazione Contatti")) {
                     Button(action: {
                         if let url = ExportService.shared.generateCSV(from: activeContacts) {
-                            shareURL = url
-                            showingShareSheet = true
+                            shareItem = ShareItem(url: url)
                         }
                     }) {
                         Label("Esporta in CSV (Excel)", systemImage: "tablecells")
@@ -62,8 +65,7 @@ struct SettingsView: View {
                     
                     Button(action: {
                         if let url = ExportService.shared.generatePDF(from: activeContacts) {
-                            shareURL = url
-                            showingShareSheet = true
+                            shareItem = ShareItem(url: url)
                         }
                     }) {
                         Label("Esporta in PDF", systemImage: "doc.richtext")
@@ -90,10 +92,8 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Impostazioni")
-            .sheet(isPresented: $showingShareSheet) {
-                if let shareURL = shareURL {
-                    ActivityViewController(activityItems: [shareURL])
-                }
+            .sheet(item: $shareItem) { item in
+                ActivityViewController(activityItems: [item.url])
             }
         }
     }
