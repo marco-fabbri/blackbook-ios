@@ -9,6 +9,7 @@ struct ContactDetailView: View {
     
     var blackbookContact: BlackbookContact
     @State private var showingRestoreError = false
+    @State private var showingRestoreConfirm = false
     @State private var errorMessage = ""
     
     var systemContact: CNContact? {
@@ -31,7 +32,7 @@ struct ContactDetailView: View {
         .navigationTitle(blackbookContact.firstName)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: { restoreContact() }) {
+                Button(action: { showingRestoreConfirm = true }) {
                     Label("Riporta su iOS", systemImage: "arrow.up.doc")
                 }
             }
@@ -40,6 +41,14 @@ struct ContactDetailView: View {
             Button("OK", role: .cancel) { }
         } message: {
             Text(errorMessage)
+        }
+        .alert("Ripristina su iOS", isPresented: $showingRestoreConfirm) {
+            Button("Annulla", role: .cancel) { }
+            Button("Ripristina", role: .destructive) {
+                restoreContact()
+            }
+        } message: {
+            Text("Attenzione: questo contatto verrà reinserito nella rubrica di iOS e RIMOSSO definitivamente da Blackbook. Vuoi procedere?")
         }
     }
     

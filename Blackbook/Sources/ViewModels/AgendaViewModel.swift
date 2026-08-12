@@ -1,6 +1,7 @@
 import Foundation
 import SwiftData
 import SwiftUI
+import Contacts
 
 @MainActor
 final class AgendaViewModel: ObservableObject {
@@ -14,6 +15,9 @@ final class AgendaViewModel: ObservableObject {
     @Published var showingBatchRestoreConfirm = false
     
     @Published var contactToActOn: BlackbookContact?
+    
+    @Published var showingImportConfirm = false
+    var pendingImportContacts: [CNContact] = []
     
     private let syncService: ContactSyncService
     

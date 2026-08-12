@@ -29,7 +29,7 @@ When working on this project, `xcodegen` is used to manage and generate the Xcod
 
 # Data Safety & Schema Migrations
 
-- **NEVER** recommend deleting the app from the device/simulator to resolve CoreData/SwiftData schema crashes if the app holds data that acts as the sole source of truth (e.g., contacts that were removed from the iOS system).
+- **NEVER** recommend deleting the app from the device/simulator **FOR ANY REASON** (including fixing UI/icon caches, resetting state, or resolving crashes) if the app holds data that acts as the sole source of truth (e.g., contacts that were removed from the iOS system).
 - Deleting the app destroys its sandbox and all local data permanently.
 - Always evaluate if a schema change can be handled via automatic lightweight migration (e.g., by adding new fields as Optionals) before suggesting destructive actions. If data loss is unavoidable, you MUST explicitly warn the user and wait for their confirmation.
 
@@ -37,3 +37,10 @@ When working on this project, `xcodegen` is used to manage and generate the Xcod
 
 - **Prevent Type-Check Timeouts**: NEVER write complex, deeply nested view hierarchies directly inside a `List` or `ForEach` closure (especially when combining conditionals and complex modifiers like `.swipeActions`). 
 - ALWAYS extract the row or cell content into a separate, dedicated `View` struct. This keeps the compiler fast and prevents the "unable to type-check this expression in reasonable time" error.
+
+# SwiftData & CloudKit
+
+- When asked to save data to iCloud using SwiftData, it is NOT enough to just use `@Model`. You MUST also:
+  1. Add the `com.apple.developer.icloud-services` (CloudKit) and `com.apple.developer.icloud-container-identifiers` capabilities to the `entitlements` section in `project.yml`.
+  2. Explicitly set `cloudKitDatabase: .automatic` in the `ModelConfiguration`.
+  3. Ensure ALL properties on your `@Model` classes either are Optionals or have explicitly defined default values (e.g. `= ""`), otherwise CloudKit sync will silently fail.

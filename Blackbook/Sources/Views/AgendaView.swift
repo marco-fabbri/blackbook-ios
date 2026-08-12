@@ -38,17 +38,8 @@ struct AgendaView: View {
                         viewModel.showingContactPicker = false
                         switch result {
                         case .success(let systemContacts):
-                            Task {
-                                do {
-                                    try await ContactSyncService().importAndDeleteFromSystem(
-                                        contacts: systemContacts,
-                                        modelContext: modelContext
-                                    )
-                                } catch {
-                                    viewModel.errorMessage = error.localizedDescription
-                                    viewModel.showingError = true
-                                }
-                            }
+                            viewModel.pendingImportContacts = systemContacts
+                            viewModel.showingImportConfirm = true
                         case .failure(let error):
                             viewModel.errorMessage = error.localizedDescription
                             viewModel.showingError = true
@@ -60,6 +51,26 @@ struct AgendaView: View {
                     Button("OK", role: .cancel) { }
                 } message: {
                     Text(viewModel.errorMessage)
+                }
+                // Import Confirm
+                .alert("Conferma Importazione", isPresented: $viewModel.showingImportConfirm) {
+                    Button("Annulla", role: .cancel) { }
+                    Button("Importa", role: .destructive) {
+                        let contactsToImport = viewModel.pendingImportContacts
+                        Task {
+                            do {
+                                try await ContactSyncService().importAndDeleteFromSystem(
+                                    contacts: contactsToImport,
+                                    modelContext: modelContext
+                                )
+                            } catch {
+                                viewModel.errorMessage = error.localizedDescription
+                                viewModel.showingError = true
+                            }
+                        }
+                    }
+                } message: {
+                    Text("Attenzione: i contatti selezionati verranno importati in Blackbook e RIMOSSI definitivamente dalla rubrica di iOS. Vuoi procedere?")
                 }
                 // Single Delete Confirm
                 .alert("Sposta nel cestino", isPresented: $viewModel.showingSingleDeleteConfirm) {
