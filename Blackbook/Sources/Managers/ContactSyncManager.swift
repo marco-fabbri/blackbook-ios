@@ -37,11 +37,14 @@ class ContactSyncManager {
                 
                 for systemContact in contacts {
                     let phoneNumbers = systemContact.phoneNumbers.map { $0.value.stringValue }
+                    let data = try? NSKeyedArchiver.archivedData(withRootObject: systemContact, requiringSecureCoding: true)
+                    
                     let newContact = BlackbookContact(
                         firstName: systemContact.givenName,
                         lastName: systemContact.familyName,
                         phoneNumbers: phoneNumbers,
-                        isTrashed: false
+                        isTrashed: false,
+                        contactData: data
                     )
                     modelContext.insert(newContact)
                     
@@ -50,14 +53,42 @@ class ContactSyncManager {
                 }
                 
                 try modelContext.save()
+                try self.contactStore.execute(saveRequest)
+                completion(nil)
+            } catch {
+                completion(error)
+            }
+        }
+    }
+    
+    func restoreToSystem(blackbookContact: BlackbookContact, modelContext: ModelContext, completion: @escaping (Error?) -> Void) {
+        DispatchQueue.main.async {
+            do {
+                guard let data = blackbookContact.contactData,
+                      let systemContact = try? NSKeyedUnarchiver.unarchivedObject(ofClass: CNContact.self, from: data),
+                      let mutableContact = systemContact.mutableCopy() as? CNMutableContact else {
+                    
+                    // Fallback se non c'è il dato raw, creiamo uno basilare
+                    let fallbackContact = CNMutableContact()
+                    fallbackContact.givenName = blackbookContact.firstName
+                    fallbackContact.familyName = blackbookContact.lastName
+                    // Per il fallback ignoriamo i telefoni o andrebbero parsati, meglio fallire elegantemente o fare un restore limitato
+                    // Ma abbiamo contactData in teoria.
+                    let error = NSError(domain: "ContactSync", code: 2, userInfo: [NSLocalizedDescriptionKey: "Impossibile recuperare i dati originali del contatto."])
+                    completion(error)
+                    return
+                }
                 
-                // execute(saveRequest) fa una chiamata di sistema, può essere eseguita qui
-                // ma per evitare blocchi della UI eccessivi, potremmo spostarla in background,
-                // però richiede l'uso corretto dei thread. Dato che è rapido, va bene sul main.
+                let saveRequest = CNSaveRequest()
+                saveRequest.add(mutableContact, toContainerWithIdentifier: nil)
+                
                 try self.contactStore.execute(saveRequest)
                 
-                completion(nil)
+                // Rimuoviamo da Blackbook
+                modelContext.delete(blackbookContact)
+                try modelContext.save()
                 
+                completion(nil)
             } catch {
                 completion(error)
             }

@@ -8,6 +8,7 @@ final class BlackbookContact {
     var lastName: String
     var phoneNumbers: [String]
     var isTrashed: Bool
+    var contactData: Data?
     
     var sortName: String {
         return lastName.isEmpty ? firstName : lastName
@@ -18,11 +19,12 @@ final class BlackbookContact {
         return String(firstChar).uppercased()
     }
     
-    init(firstName: String, lastName: String, phoneNumbers: [String], isTrashed: Bool = false) {
+    init(firstName: String, lastName: String, phoneNumbers: [String], isTrashed: Bool = false, contactData: Data? = nil) {
         self.id = UUID()
         self.firstName = firstName
         self.lastName = lastName
         self.phoneNumbers = phoneNumbers
         self.isTrashed = isTrashed
+        self.contactData = contactData
     }
 }

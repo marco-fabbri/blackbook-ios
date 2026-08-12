@@ -23,13 +23,15 @@ struct AgendaView: View {
                 ForEach(sortedKeys, id: \.self) { key in
                     Section(header: Text(key)) {
                         ForEach(groupedContacts[key] ?? []) { contact in
-                            VStack(alignment: .leading) {
-                                Text("\(contact.firstName) \(contact.lastName)")
-                                    .font(.headline)
-                                if let firstPhone = contact.phoneNumbers.first {
-                                    Text(firstPhone)
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
+                            NavigationLink(destination: ContactDetailView(blackbookContact: contact)) {
+                                VStack(alignment: .leading) {
+                                    Text("\(contact.firstName) \(contact.lastName)")
+                                        .font(.headline)
+                                    if let firstPhone = contact.phoneNumbers.first {
+                                        Text(firstPhone)
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                    }
                                 }
                             }
                             .swipeActions {
