@@ -14,6 +14,21 @@ struct AgendaView: View {
     @State private var showingShareSheet = false
     @State private var shareURL: URL?
     
+    @State private var searchText = ""
+    @State private var isSearchActive = false
+    @FocusState private var isSearchFocused: Bool
+    
+    var filteredContacts: [BlackbookContact] {
+        if searchText.isEmpty {
+            return allContacts
+        }
+        return allContacts.filter { contact in
+            contact.firstName.localizedCaseInsensitiveContains(searchText) ||
+            contact.lastName.localizedCaseInsensitiveContains(searchText) ||
+            (contact.phoneNumbers.first?.contains(searchText) ?? false)
+        }
+    }
+    
     var body: some View {
         NavigationView {
             mainContent
@@ -78,32 +93,71 @@ struct AgendaView: View {
                 .onDisappear {
                     currentEditMode = .inactive
                 }
+                .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ActivateSearch"))) { _ in
+                    withAnimation {
+                        isSearchActive = true
+                        isSearchFocused = true
+                    }
+                }
         }
     }
     
     @ViewBuilder
     private var mainContent: some View {
-        let grouped = viewModel.groupedContacts(from: allContacts, sortOrder: sortOrder)
+        let grouped = viewModel.groupedContacts(from: filteredContacts, sortOrder: sortOrder)
         let keys = viewModel.sortedKeys(for: grouped)
         
         ZStack(alignment: .bottom) {
-            List(selection: $viewModel.selectedContactIDs) {
-                ForEach(keys, id: \.self) { key in
-                    Section(header: Text(key)) {
-                        ForEach(grouped[key] ?? []) { contact in
-                            AgendaCell(
-                                contact: contact,
-                                showImages: showImages,
-                                onDelete: {
-                                    viewModel.contactToActOn = contact
-                                    viewModel.showingSingleDeleteConfirm = true
-                                }
-                            )
+            VStack(spacing: 0) {
+                if isSearchActive {
+                    HStack {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.gray)
+                        
+                        TextField("Cerca contatti...", text: $searchText)
+                            .focused($isSearchFocused)
+                            .autocapitalization(.none)
+                            .disableAutocorrection(true)
+                        
+                        if !searchText.isEmpty {
+                            Button(action: { searchText = "" }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(.gray)
+                            }
+                        }
+                        
+                        Button("Annulla") {
+                            withAnimation {
+                                searchText = ""
+                                isSearchActive = false
+                                isSearchFocused = false
+                            }
+                        }
+                        .padding(.leading, 8)
+                    }
+                    .padding()
+                    .background(Color(UIColor.secondarySystemBackground))
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                }
+                
+                List(selection: $viewModel.selectedContactIDs) {
+                    ForEach(keys, id: \.self) { key in
+                        Section(header: Text(key)) {
+                            ForEach(grouped[key] ?? []) { contact in
+                                AgendaCell(
+                                    contact: contact,
+                                    showImages: showImages,
+                                    onDelete: {
+                                        viewModel.contactToActOn = contact
+                                        viewModel.showingSingleDeleteConfirm = true
+                                    }
+                                )
+                            }
                         }
                     }
                 }
+                .listStyle(SidebarListStyle())
             }
-            .listStyle(SidebarListStyle())
             
             if currentEditMode.isEditing == true {
                 // Floating Mass Actions Bar

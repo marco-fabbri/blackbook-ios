@@ -100,8 +100,6 @@ struct MainTabView: View {
                     AgendaView()
                 case 1:
                     SettingsView()
-                case 2:
-                    SearchView()
                 default:
                     AgendaView()
                 }
@@ -121,8 +119,9 @@ struct MainTabView: View {
                 
                 Spacer()
                 
-                TabBarButton(icon: "magnifyingglass", title: "Cerca", isSelected: selectedTab == 2) {
-                    selectedTab = 2
+                TabBarButton(icon: "magnifyingglass", title: "Cerca", isSelected: false) {
+                    selectedTab = 0
+                    NotificationCenter.default.post(name: NSNotification.Name("ActivateSearch"), object: nil)
                 }
             }
             .padding(.horizontal, 30)
