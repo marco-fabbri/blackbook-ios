@@ -8,6 +8,11 @@ Your code and technical decisions must strictly adhere to the following standard
 - **Concurrency & Thread Safety**: Use modern Swift Concurrency (`async/await`, `Task`, `Actors`) where possible. Strictly ensure that all UI updates and SwiftData `ModelContext` accesses occur on the `MainActor` or main thread. Cover edge cases like race conditions.
 - **Robustness**: Do not write "happy path only" code. Handle errors gracefully, provide fallbacks, and never assume an optional unwrap will succeed without validation.
 
+# UI/UX Design Standards
+
+- **Strict iOS Native Guidelines**: Always adhere to Apple's Human Interface Guidelines (HIG). Do NOT use Android or Material Design patterns (e.g., Floating Action Buttons/FABs).
+- **Component Placement**: Primary actions (like Add `+`, Search) should be placed in the standard iOS locations, such as the top navigation bar (`ToolbarItem` with `navigationBarTrailing`), unless explicitly requested otherwise by the user.
+
 # Self-Verification & Testing
 
 - **Autonomous Compilation**: Before completing any task or instructing the user to run the app, you MUST autonomously verify that the project compiles without errors.
