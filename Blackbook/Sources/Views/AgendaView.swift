@@ -158,45 +158,6 @@ struct AgendaView: View {
                 }
                 .listStyle(SidebarListStyle())
             }
-            
-            if currentEditMode.isEditing == true {
-                // Floating Mass Actions Bar
-                HStack(spacing: 60) {
-                    Button(action: { 
-                        let selectedContacts = allContacts.filter { viewModel.selectedContactIDs.contains($0.id) }
-                        if let url = ExportService.shared.generateCSV(from: selectedContacts) {
-                            shareURL = url
-                            showingShareSheet = true
-                        }
-                    }) {
-                        VStack(spacing: 4) {
-                            Image(systemName: "arrow.up.doc")
-                                .font(.system(size: 20))
-                            Text("Esporta")
-                                .font(.caption)
-                        }
-                        .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .blue)
-                    }
-                    .disabled(viewModel.selectedContactIDs.isEmpty)
-                    
-                    Button(action: { viewModel.showingBatchDeleteConfirm = true }) {
-                        VStack(spacing: 4) {
-                            Image(systemName: "trash")
-                                .font(.system(size: 20))
-                            Text("Cestina")
-                                .font(.caption)
-                        }
-                        .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .red)
-                    }
-                    .disabled(viewModel.selectedContactIDs.isEmpty)
-                }
-                .padding(.vertical, 12)
-                .padding(.horizontal, 40)
-                .background(Color(UIColor.systemBackground).opacity(0.95))
-                .clipShape(Capsule())
-                .shadow(color: .black.opacity(0.15), radius: 10, x: 0, y: 5)
-                .padding(.bottom, 20)
-            }
         }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
@@ -221,6 +182,26 @@ struct AgendaView: View {
                 if currentEditMode.isEditing == false {
                     Button(action: { viewModel.showingContactPicker = true }) {
                         Image(systemName: "plus")
+                    }
+                } else {
+                    HStack(spacing: 24) {
+                        Button(action: { 
+                            let selectedContacts = allContacts.filter { viewModel.selectedContactIDs.contains($0.id) }
+                            if let url = ExportService.shared.generateCSV(from: selectedContacts) {
+                                shareURL = url
+                                showingShareSheet = true
+                            }
+                        }) {
+                            Image(systemName: "arrow.up.doc")
+                                .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .blue)
+                        }
+                        .disabled(viewModel.selectedContactIDs.isEmpty)
+                        
+                        Button(action: { viewModel.showingBatchDeleteConfirm = true }) {
+                            Image(systemName: "trash")
+                                .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .red)
+                        }
+                        .disabled(viewModel.selectedContactIDs.isEmpty)
                     }
                 }
             }
