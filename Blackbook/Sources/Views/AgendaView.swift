@@ -93,7 +93,7 @@ struct AgendaView: View {
                 // Batch Restore Confirm
                 .alert("Riporta su iOS", isPresented: $showingBatchRestoreConfirm) {
                     Button("Annulla", role: .cancel) { }
-                    Button("Riporta", role: .default) {
+                    Button("Riporta") {
                         batchRestore()
                     }
                 } message: {

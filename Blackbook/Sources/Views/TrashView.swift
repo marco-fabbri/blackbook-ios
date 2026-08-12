@@ -47,7 +47,7 @@ struct TrashView: View {
                 // Single Restore Confirm
                 .alert("Ripristina contatto", isPresented: $showingSingleRestoreConfirm) {
                     Button("Annulla", role: .cancel) { }
-                    Button("Ripristina", role: .default) {
+                    Button("Ripristina") {
                         if let contact = contactToActOn {
                             restoreContact(contact)
                         }
@@ -67,7 +67,7 @@ struct TrashView: View {
                 // Batch Restore Confirm
                 .alert("Ripristina selezionati", isPresented: $showingBatchRestoreConfirm) {
                     Button("Annulla", role: .cancel) { }
-                    Button("Ripristina tutti", role: .default) {
+                    Button("Ripristina tutti") {
                         batchRestore()
                     }
                 } message: {
