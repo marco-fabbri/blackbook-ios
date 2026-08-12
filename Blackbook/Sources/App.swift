@@ -101,6 +101,11 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Impostazioni", systemImage: "gear")
                 }
+                
+            SearchView()
+                .tabItem {
+                    Label("Cerca", systemImage: "magnifyingglass")
+                }
         }
         .onAppear {
             DatabaseUpgrader.upgradeLegacyContacts(modelContext: modelContext)

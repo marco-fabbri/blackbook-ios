@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import Contacts
 
 struct AgendaView: View {
     @Environment(\.modelContext) private var modelContext
@@ -135,7 +136,7 @@ struct AgendaView: View {
                 .padding(.bottom, 20)
             }
         }
-        .navigationTitle("Contatti")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
@@ -147,23 +148,12 @@ struct AgendaView: View {
                     }) {
                         Text(currentEditMode.isEditing ? "Fine" : "Modifica")
                     }
-                    
-                    if currentEditMode.isEditing == false {
-                        NavigationLink(destination: TrashView()) {
-                            Image(systemName: "trash")
-                        }
-                    }
                 }
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 if currentEditMode.isEditing == false {
-                    HStack(spacing: 16) {
-                        Button(action: { /* TODO: Implement search */ }) {
-                            Image(systemName: "magnifyingglass")
-                        }
-                        Button(action: { viewModel.showingContactPicker = true }) {
-                            Image(systemName: "plus")
-                        }
+                    Button(action: { viewModel.showingContactPicker = true }) {
+                        Image(systemName: "plus")
                     }
                 }
             }
@@ -198,7 +188,7 @@ struct AgendaRowView: View {
     var body: some View {
         HStack {
             if showImages {
-                if let imageData = contact.thumbnailData, let uiImage = UIImage(data: imageData) {
+                if let imageData = contact.thumbnailData ?? extractImage(from: contact.contactData), let uiImage = UIImage(data: imageData) {
                     Image(uiImage: uiImage)
                         .resizable()
                         .scaledToFill()
@@ -218,9 +208,23 @@ struct AgendaRowView: View {
                 if let firstPhone = contact.phoneNumbers.first {
                     Text(firstPhone)
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.gray)
                 }
             }
         }
+    }
+    
+    private func extractImage(from data: Data?) -> Data? {
+        guard let data = data,
+              let contact = try? NSKeyedUnarchiver.unarchivedObject(ofClass: CNContact.self, from: data) else {
+            return nil
+        }
+        if contact.isKeyAvailable(CNContactThumbnailImageDataKey) {
+            return contact.thumbnailImageData
+        }
+        if contact.isKeyAvailable(CNContactImageDataKey) {
+            return contact.imageData
+        }
+        return nil
     }
 }

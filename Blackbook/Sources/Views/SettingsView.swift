@@ -52,6 +52,16 @@ struct SettingsView: View {
                             .foregroundColor(.secondary)
                     }
                 }
+                
+                Section {
+                    NavigationLink(destination: TrashView()) {
+                        HStack {
+                            Image(systemName: "trash")
+                            Text("Cestino")
+                        }
+                        .foregroundColor(.red)
+                    }
+                }
             }
             .navigationTitle("Impostazioni")
         }

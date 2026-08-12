@@ -41,7 +41,11 @@ final class ContactSyncService {
             let data = try? NSKeyedArchiver.archivedData(withRootObject: systemContact, requiringSecureCoding: true)
             
             // Refetch the contact just to get the thumbnail image data
-            var thumbnail: Data? = systemContact.thumbnailImageData
+            var thumbnail: Data? = nil
+            if systemContact.isKeyAvailable(CNContactThumbnailImageDataKey) {
+                thumbnail = systemContact.thumbnailImageData
+            }
+            
             if thumbnail == nil {
                 let keys = [
                     CNContactImageDataAvailableKey as CNKeyDescriptor,
