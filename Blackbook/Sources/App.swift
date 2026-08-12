@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import Contacts
 
 @main
 struct BlackbookApp: App {
@@ -34,6 +35,10 @@ struct BlackbookApp: App {
                 if isFaceIDEnabled {
                     authManager.isAuthenticated = false
                 }
+            }
+            .task {
+                // Request contacts permission at startup
+                _ = try? await CNContactStore().requestAccess(for: .contacts)
             }
         }
         .modelContainer(sharedModelContainer)
