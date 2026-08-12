@@ -22,5 +22,12 @@
 	<string>Blackbook needs access to your contacts to import them and remove them from the system address book upon request.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Blackbook uses Face ID or Touch ID to secure your private address book.</string>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+	</dict>
+	<key>UILaunchScreen</key>
+	<dict/>
 </dict>
 </plist>
