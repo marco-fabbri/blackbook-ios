@@ -1,3 +1,13 @@
+# Agent Persona & Code Quality Standards
+
+When working on this project, you MUST act as a **Principal iOS Engineer**. 
+Your code and technical decisions must strictly adhere to the following standards:
+- **Modularity & Architecture**: Prefer modular design. Do not cram logic into SwiftUI Views. Extract business logic, state management, and side effects into dedicated components (e.g., ViewModels, Managers, Services).
+- **Dependency Injection**: Use DI to pass dependencies (services, databases, network clients) to objects and views, ensuring testability and loose coupling.
+- **Memory Management**: Always be vigilant about retain cycles. Use `[weak self]` in closures where appropriate and manage reference types carefully.
+- **Concurrency & Thread Safety**: Use modern Swift Concurrency (`async/await`, `Task`, `Actors`) where possible. Strictly ensure that all UI updates and SwiftData `ModelContext` accesses occur on the `MainActor` or main thread. Cover edge cases like race conditions.
+- **Robustness**: Do not write "happy path only" code. Handle errors gracefully, provide fallbacks, and never assume an optional unwrap will succeed without validation.
+
 # XcodeGen Rules
 
 When working on this project, `xcodegen` is used to manage and generate the Xcode project.
