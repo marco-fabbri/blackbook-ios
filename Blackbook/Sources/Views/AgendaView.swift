@@ -13,7 +13,7 @@ struct AgendaView: View {
     @State private var currentEditMode: EditMode = .inactive
     @State private var shareItem: ShareItem?
     
-    @Binding var searchText: String
+    @State private var searchText = ""
     
     var filteredContacts: [BlackbookContact] {
         if searchText.isEmpty {
@@ -130,8 +130,9 @@ struct AgendaView: View {
                 }
             }
             .listStyle(PlainListStyle())
+            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Cerca contatti...")
             .safeAreaInset(edge: .bottom) {
-                Color.clear.frame(height: 130) // Spazio per le capsule di vetro fluttuanti
+                Color.clear.frame(height: 80) // Spazio per la capsula di vetro fluttuante
             }
         }
         .navigationTitle("Contatti")

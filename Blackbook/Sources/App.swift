@@ -90,14 +90,13 @@ struct LockScreenView: View {
 struct MainTabView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var selectedTab = 0
-    @State private var searchText = ""
     
     var body: some View {
         ZStack(alignment: .bottom) {
             // Main Content
             Group {
                 if selectedTab == 0 {
-                    AgendaView(searchText: $searchText)
+                    AgendaView()
                 } else {
                     SettingsView()
                 }
@@ -105,62 +104,32 @@ struct MainTabView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .ignoresSafeArea(edges: .bottom)
             
-            // Floating iOS 27 Glass UI
-            VStack(spacing: 12) {
-                if selectedTab == 0 {
-                    // Glass Search Bar
-                    HStack {
-                        Image(systemName: "magnifyingglass").foregroundColor(.gray)
-                        TextField("Cerca contatti...", text: $searchText)
-                            .textFieldStyle(PlainTextFieldStyle())
-                        if !searchText.isEmpty {
-                            Button(action: { searchText = "" }) {
-                                Image(systemName: "xmark.circle.fill").foregroundColor(.gray)
-                            }
-                        }
+            // Floating iOS 27 Glass UI Tab Bar
+            HStack(spacing: 50) {
+                TabBarButton(icon: "person.crop.circle", title: "Contatti", isSelected: selectedTab == 0) {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        selectedTab = 0
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
-                    .background(
-                        Capsule()
-                            .fill(Color(UIColor.systemBackground).opacity(0.4))
-                            .background(.ultraThinMaterial, in: Capsule())
-                    )
-                    .overlay(
-                        Capsule().stroke(Color.white.opacity(0.2), lineWidth: 0.5)
-                    )
-                    .shadow(color: Color.black.opacity(0.15), radius: 15, x: 0, y: 8)
-                    .padding(.horizontal, 24)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
                 
-                // Glass Tab Bar
-                HStack(spacing: 50) {
-                    TabBarButton(icon: "person.crop.circle", title: "Contatti", isSelected: selectedTab == 0) {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                            selectedTab = 0
-                        }
-                    }
-                    
-                    TabBarButton(icon: "gear", title: "Impostazioni", isSelected: selectedTab == 1) {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                            selectedTab = 1
-                        }
+                TabBarButton(icon: "gear", title: "Impostazioni", isSelected: selectedTab == 1) {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        selectedTab = 1
                     }
                 }
-                .padding(.horizontal, 32)
-                .padding(.vertical, 14)
-                .background(
-                    Capsule()
-                        .fill(Color(UIColor.systemBackground).opacity(0.4))
-                        .background(.ultraThinMaterial, in: Capsule())
-                )
-                .overlay(
-                    Capsule().stroke(Color.white.opacity(0.2), lineWidth: 0.5)
-                )
-                .shadow(color: Color.black.opacity(0.15), radius: 15, x: 0, y: 8)
             }
-            .padding(.bottom, 24)
+            .padding(.horizontal, 32)
+            .padding(.vertical, 14)
+            .background(
+                Capsule()
+                    .fill(Color(UIColor.systemBackground).opacity(0.4))
+                    .background(.ultraThinMaterial, in: Capsule())
+            )
+            .overlay(
+                Capsule().stroke(Color.white.opacity(0.2), lineWidth: 0.5)
+            )
+            .shadow(color: Color.black.opacity(0.15), radius: 15, x: 0, y: 8)
+            .padding(.bottom, 8)
         }
         .onAppear {
             DatabaseUpgrader.upgradeLegacyContacts(modelContext: modelContext)
