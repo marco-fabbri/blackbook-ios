@@ -34,33 +34,7 @@ struct TrashView: View {
         NavigationView {
             List(selection: $selectedContacts) {
                 ForEach(sortedContacts) { contact in
-                    HStack {
-                        if showImages {
-                            if let imageData = contact.thumbnailData, let uiImage = UIImage(data: imageData) {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 40, height: 40)
-                                    .clipShape(Circle())
-                            } else {
-                                Image(systemName: "person.crop.circle.fill")
-                                    .resizable()
-                                    .frame(width: 40, height: 40)
-                                    .foregroundColor(.gray)
-                            }
-                        }
-                        
-                        VStack(alignment: .leading) {
-                            Text("\(contact.firstName) \(contact.lastName)")
-                                .font(.headline)
-                                .foregroundColor(.gray)
-                            if let firstPhone = contact.phoneNumbers.first {
-                                Text(firstPhone)
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
-                            }
-                        }
-                    }
+                    TrashRowView(contact: contact, showImages: showImages)
                     .swipeActions(edge: .trailing) {
                         Button(role: .destructive) {
                             contactToActOn = contact
@@ -173,5 +147,40 @@ struct TrashView: View {
         try? modelContext.save()
         selectedContacts.removeAll()
         editMode?.wrappedValue = .inactive
+    }
+}
+
+struct TrashRowView: View {
+    var contact: BlackbookContact
+    var showImages: Bool
+    
+    var body: some View {
+        HStack {
+            if showImages {
+                if let imageData = contact.thumbnailData, let uiImage = UIImage(data: imageData) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 40, height: 40)
+                        .clipShape(Circle())
+                } else {
+                    Image(systemName: "person.crop.circle.fill")
+                        .resizable()
+                        .frame(width: 40, height: 40)
+                        .foregroundColor(.gray)
+                }
+            }
+            
+            VStack(alignment: .leading) {
+                Text("\(contact.firstName) \(contact.lastName)")
+                    .font(.headline)
+                    .foregroundColor(.gray)
+                if let firstPhone = contact.phoneNumbers.first {
+                    Text(firstPhone)
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                }
+            }
+        }
     }
 }

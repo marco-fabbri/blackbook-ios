@@ -48,32 +48,7 @@ struct AgendaView: View {
                     Section(header: Text(key)) {
                         ForEach(groupedContacts[key] ?? []) { contact in
                             NavigationLink(destination: ContactDetailView(blackbookContact: contact)) {
-                                HStack {
-                                    if showImages {
-                                        if let imageData = contact.thumbnailData, let uiImage = UIImage(data: imageData) {
-                                            Image(uiImage: uiImage)
-                                                .resizable()
-                                                .scaledToFill()
-                                                .frame(width: 40, height: 40)
-                                                .clipShape(Circle())
-                                        } else {
-                                            Image(systemName: "person.crop.circle.fill")
-                                                .resizable()
-                                                .frame(width: 40, height: 40)
-                                                .foregroundColor(.gray)
-                                        }
-                                    }
-                                    
-                                    VStack(alignment: .leading) {
-                                        Text("\(contact.firstName) \(contact.lastName)")
-                                            .font(.headline)
-                                        if let firstPhone = contact.phoneNumbers.first {
-                                            Text(firstPhone)
-                                                .font(.subheadline)
-                                                .foregroundColor(.secondary)
-                                        }
-                                    }
-                                }
+                                AgendaRowView(contact: contact, showImages: showImages)
                             }
                             .swipeActions {
                                 Button(role: .destructive) {
@@ -211,6 +186,40 @@ struct AgendaView: View {
             }
             self.selectedContacts.removeAll()
             self.editMode?.wrappedValue = .inactive
+        }
+    }
+}
+
+struct AgendaRowView: View {
+    var contact: BlackbookContact
+    var showImages: Bool
+    
+    var body: some View {
+        HStack {
+            if showImages {
+                if let imageData = contact.thumbnailData, let uiImage = UIImage(data: imageData) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 40, height: 40)
+                        .clipShape(Circle())
+                } else {
+                    Image(systemName: "person.crop.circle.fill")
+                        .resizable()
+                        .frame(width: 40, height: 40)
+                        .foregroundColor(.gray)
+                }
+            }
+            
+            VStack(alignment: .leading) {
+                Text("\(contact.firstName) \(contact.lastName)")
+                    .font(.headline)
+                if let firstPhone = contact.phoneNumbers.first {
+                    Text(firstPhone)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+            }
         }
     }
 }
