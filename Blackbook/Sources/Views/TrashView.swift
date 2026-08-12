@@ -81,50 +81,43 @@ struct TrashView: View {
                 }
             }
             .listStyle(PlainListStyle())
-            
-            if currentEditMode.isEditing == true {
-                // Floating Mass Actions Bar
-                HStack(spacing: 60) {
-                    Button(action: { viewModel.showingBatchRestoreConfirm = true }) {
-                        VStack(spacing: 4) {
-                            Image(systemName: "arrow.uturn.backward")
-                                .font(.system(size: 20))
-                            Text("Ripristina")
-                                .font(.caption)
+        }
+        .navigationTitle("Cestino")
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            if currentEditMode.isEditing == false {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        withAnimation {
+                            currentEditMode = .active
                         }
-                        .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .green)
+                    }) {
+                        Text("Modifica")
+                    }
+                }
+            } else {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        withAnimation {
+                            currentEditMode = .inactive
+                        }
+                    }) {
+                        Text("Fine")
+                    }
+                }
+                
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Button(action: { viewModel.showingBatchRestoreConfirm = true }) {
+                        Image(systemName: "arrow.uturn.backward")
+                            .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .green)
                     }
                     .disabled(viewModel.selectedContactIDs.isEmpty)
                     
                     Button(action: { viewModel.showingBatchDeleteConfirm = true }) {
-                        VStack(spacing: 4) {
-                            Image(systemName: "xmark.bin")
-                                .font(.system(size: 20))
-                            Text("Elimina")
-                                .font(.caption)
-                        }
-                        .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .red)
+                        Image(systemName: "xmark.bin")
+                            .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .red)
                     }
                     .disabled(viewModel.selectedContactIDs.isEmpty)
-                }
-                .padding(.vertical, 12)
-                .padding(.horizontal, 40)
-                .background(Color(UIColor.systemBackground).opacity(0.95))
-                .clipShape(Capsule())
-                .shadow(color: .black.opacity(0.15), radius: 10, x: 0, y: 5)
-                .padding(.bottom, 20)
-            }
-        }
-        .navigationTitle("Cestino")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {
-                    withAnimation {
-                        currentEditMode = currentEditMode.isEditing ? .inactive : .active
-                    }
-                }) {
-                    Text(currentEditMode.isEditing ? "Fine" : "Modifica")
                 }
             }
         }
@@ -163,7 +156,7 @@ struct TrashRowView: View {
     let showImages: Bool
     
     var body: some View {
-        HStack {
+        HStack(spacing: 14) {
             if showImages {
                 if let imageData = contact.thumbnailData, let uiImage = UIImage(data: imageData) {
                     Image(uiImage: uiImage)
@@ -190,5 +183,6 @@ struct TrashRowView: View {
                 }
             }
         }
+        .padding(.vertical, 4)
     }
 }

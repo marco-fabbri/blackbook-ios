@@ -14,8 +14,6 @@ struct AgendaView: View {
     @State private var shareItem: ShareItem?
     
     @State private var searchText = ""
-    @State private var isSearchActive = false
-    @FocusState private var isSearchFocused: Bool
     
     var filteredContacts: [BlackbookContact] {
         if searchText.isEmpty {
@@ -105,12 +103,6 @@ struct AgendaView: View {
                 .onDisappear {
                     currentEditMode = .inactive
                 }
-                .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ActivateSearch"))) { _ in
-                    withAnimation {
-                        isSearchActive = true
-                        isSearchFocused = true
-                    }
-                }
         }
     }
     
@@ -120,59 +112,27 @@ struct AgendaView: View {
         let keys = viewModel.sortedKeys(for: grouped)
         
         ZStack(alignment: .bottom) {
-            VStack(spacing: 0) {
-                if isSearchActive {
-                    HStack {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.gray)
-                        
-                        TextField("Cerca contatti...", text: $searchText)
-                            .focused($isSearchFocused)
-                            .autocapitalization(.none)
-                            .disableAutocorrection(true)
-                        
-                        if !searchText.isEmpty {
-                            Button(action: { searchText = "" }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundColor(.gray)
-                            }
-                        }
-                        
-                        Button("Annulla") {
-                            withAnimation {
-                                searchText = ""
-                                isSearchActive = false
-                                isSearchFocused = false
-                            }
-                        }
-                        .padding(.leading, 8)
-                    }
-                    .padding()
-                    .background(Color(UIColor.secondarySystemBackground))
-                    .transition(.move(edge: .top).combined(with: .opacity))
-                }
-                
-                List(selection: $viewModel.selectedContactIDs) {
-                    ForEach(keys, id: \.self) { key in
-                        Section(header: Text(key)) {
-                            ForEach(grouped[key] ?? []) { contact in
-                                AgendaCell(
-                                    contact: contact,
-                                    showImages: showImages,
-                                    onDelete: {
-                                        viewModel.contactToActOn = contact
-                                        viewModel.showingSingleDeleteConfirm = true
-                                    }
-                                )
-                            }
+            List(selection: $viewModel.selectedContactIDs) {
+                ForEach(keys, id: \.self) { key in
+                    Section(header: Text(key)) {
+                        ForEach(grouped[key] ?? []) { contact in
+                            AgendaCell(
+                                contact: contact,
+                                showImages: showImages,
+                                onDelete: {
+                                    viewModel.contactToActOn = contact
+                                    viewModel.showingSingleDeleteConfirm = true
+                                }
+                            )
                         }
                     }
                 }
-                .listStyle(SidebarListStyle())
             }
+            .listStyle(PlainListStyle())
+            .searchable(text: $searchText, prompt: "Cerca contatti...")
         }
-        .navigationTitle("")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitle("Contatti")
+        .navigationBarTitleDisplayMode(.large)
         .sheet(item: $shareItem) { item in
             ActivityViewController(activityItems: [item.url])
         }
@@ -188,30 +148,30 @@ struct AgendaView: View {
                     }
                 }
             }
-            ToolbarItem(placement: .navigationBarTrailing) {
-                if currentEditMode.isEditing == false {
+            if currentEditMode.isEditing == false {
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { viewModel.showingContactPicker = true }) {
                         Image(systemName: "plus")
                     }
-                } else {
-                    HStack(spacing: 24) {
-                        Button(action: { 
-                            let selectedContacts = allContacts.filter { viewModel.selectedContactIDs.contains($0.id) }
-                            if let url = ExportService.shared.generateCSV(from: selectedContacts) {
-                                shareItem = ShareItem(url: url)
-                            }
-                        }) {
-                            Image(systemName: "arrow.up.doc")
-                                .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .blue)
+                }
+            } else {
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Button(action: { 
+                        let selectedContacts = allContacts.filter { viewModel.selectedContactIDs.contains($0.id) }
+                        if let url = ExportService.shared.generateCSV(from: selectedContacts) {
+                            shareItem = ShareItem(url: url)
                         }
-                        .disabled(viewModel.selectedContactIDs.isEmpty)
-                        
-                        Button(action: { viewModel.showingBatchDeleteConfirm = true }) {
-                            Image(systemName: "trash")
-                                .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .red)
-                        }
-                        .disabled(viewModel.selectedContactIDs.isEmpty)
+                    }) {
+                        Image(systemName: "arrow.up.doc")
+                            .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .blue)
                     }
+                    .disabled(viewModel.selectedContactIDs.isEmpty)
+                    
+                    Button(action: { viewModel.showingBatchDeleteConfirm = true }) {
+                        Image(systemName: "trash")
+                            .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .red)
+                    }
+                    .disabled(viewModel.selectedContactIDs.isEmpty)
                 }
             }
         }
@@ -243,7 +203,7 @@ struct AgendaRowView: View {
     let showImages: Bool
     
     var body: some View {
-        HStack {
+        HStack(spacing: 14) {
             if showImages {
                 if let imageData = contact.thumbnailData ?? extractImage(from: contact.contactData), let uiImage = UIImage(data: imageData) {
                     Image(uiImage: uiImage)
@@ -269,6 +229,7 @@ struct AgendaRowView: View {
                 }
             }
         }
+        .padding(.vertical, 4)
     }
     
     private func extractImage(from data: Data?) -> Data? {
