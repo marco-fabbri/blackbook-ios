@@ -88,7 +88,8 @@ struct AgendaView: View {
                 }
             }
             .listStyle(SidebarListStyle())
-            .navigationTitle("Blackbook")
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     EditButton()
