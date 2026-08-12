@@ -9,11 +9,12 @@ struct AgendaView: View {
     @AppStorage("sortOrder") private var sortOrder = "Cognome"
     
     @StateObject private var viewModel = AgendaViewModel()
-    @Environment(\.editMode) private var editMode
+    @State private var currentEditMode: EditMode = .inactive
     
     var body: some View {
         NavigationView {
             mainContent
+                .environment(\.editMode, $currentEditMode)
                 .sheet(isPresented: $viewModel.showingContactPicker) {
                     ContactPickerManager { result in
                         viewModel.showingContactPicker = false
@@ -57,7 +58,7 @@ struct AgendaView: View {
                 .alert("Sposta selezionati", isPresented: $viewModel.showingBatchDeleteConfirm) {
                     Button("Annulla", role: .cancel) { }
                     Button("Sposta", role: .destructive) {
-                        viewModel.batchTrash(allContacts: allContacts, context: modelContext, editMode: editMode)
+                        viewModel.batchTrash(allContacts: allContacts, context: modelContext, editMode: $currentEditMode)
                     }
                 } message: {
                     Text("Vuoi spostare \(viewModel.selectedContactIDs.count) contatti nel cestino?")
@@ -66,7 +67,7 @@ struct AgendaView: View {
                 .alert("Riporta su iOS", isPresented: $viewModel.showingBatchRestoreConfirm) {
                     Button("Annulla", role: .cancel) { }
                     Button("Riporta") {
-                        viewModel.batchRestore(allContacts: allContacts, context: modelContext, editMode: editMode)
+                        viewModel.batchRestore(allContacts: allContacts, context: modelContext, editMode: $currentEditMode)
                     }
                 } message: {
                     Text("Vuoi riportare \(viewModel.selectedContactIDs.count) contatti nella rubrica di sistema?")
@@ -104,7 +105,7 @@ struct AgendaView: View {
             }
             
             ToolbarItem(placement: .navigationBarTrailing) {
-                if editMode?.wrappedValue.isEditing == true {
+                if currentEditMode.isEditing == true {
                     HStack {
                         Button(action: { viewModel.showingBatchRestoreConfirm = true }) {
                             Image(systemName: "arrow.up.doc")

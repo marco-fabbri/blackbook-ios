@@ -44,12 +44,13 @@ struct ContactDetailView: View {
     }
     
     private func restoreContact() {
-        ContactSyncManager.shared.restoreToSystem(blackbookContact: blackbookContact, modelContext: modelContext) { error in
-            if let error = error {
+        Task {
+            do {
+                try await ContactSyncService().restoreToSystem(blackbookContact: blackbookContact, modelContext: modelContext)
+                presentationMode.wrappedValue.dismiss()
+            } catch {
                 self.errorMessage = error.localizedDescription
                 self.showingRestoreError = true
-            } else {
-                self.presentationMode.wrappedValue.dismiss()
             }
         }
     }

@@ -9,11 +9,12 @@ struct TrashView: View {
     @AppStorage("sortOrder") private var sortOrder = "Cognome"
     
     @StateObject private var viewModel = TrashViewModel()
-    @Environment(\.editMode) private var editMode
+    @State private var currentEditMode: EditMode = .inactive
 
     var body: some View {
         NavigationView {
             mainContent
+                .environment(\.editMode, $currentEditMode)
                 // Single Delete Confirm
                 .alert("Elimina definitivamente", isPresented: $viewModel.showingSingleDeleteConfirm) {
                     Button("Annulla", role: .cancel) { }
@@ -40,7 +41,7 @@ struct TrashView: View {
                 .alert("Elimina selezionati", isPresented: $viewModel.showingBatchDeleteConfirm) {
                     Button("Annulla", role: .cancel) { }
                     Button("Elimina tutti", role: .destructive) {
-                        viewModel.batchDelete(trashedContacts: trashedContacts, context: modelContext, editMode: editMode)
+                        viewModel.batchDelete(trashedContacts: trashedContacts, context: modelContext, editMode: $currentEditMode)
                     }
                 } message: {
                     Text("Vuoi eliminare definitivamente \(viewModel.selectedContactIDs.count) contatti? L'azione non può essere annullata.")
@@ -49,7 +50,7 @@ struct TrashView: View {
                 .alert("Ripristina selezionati", isPresented: $viewModel.showingBatchRestoreConfirm) {
                     Button("Annulla", role: .cancel) { }
                     Button("Ripristina tutti") {
-                        viewModel.batchRestore(trashedContacts: trashedContacts, context: modelContext, editMode: editMode)
+                        viewModel.batchRestore(trashedContacts: trashedContacts, context: modelContext, editMode: $currentEditMode)
                     }
                 } message: {
                     Text("Vuoi ripristinare \(viewModel.selectedContactIDs.count) contatti nell'Agenda?")
@@ -85,7 +86,7 @@ struct TrashView: View {
             }
             
             ToolbarItem(placement: .navigationBarTrailing) {
-                if editMode?.wrappedValue.isEditing == true {
+                if currentEditMode.isEditing == true {
                     HStack {
                         Button(action: { viewModel.showingBatchRestoreConfirm = true }) {
                             Image(systemName: "arrow.uturn.backward")

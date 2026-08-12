@@ -40,13 +40,22 @@ final class ContactSyncService {
             let phoneNumbers = systemContact.phoneNumbers.map { $0.value.stringValue }
             let data = try? NSKeyedArchiver.archivedData(withRootObject: systemContact, requiringSecureCoding: true)
             
+            // Refetch the contact just to get the thumbnail image data
+            var thumbnail: Data? = systemContact.thumbnailImageData
+            if thumbnail == nil {
+                let keys = [CNContactThumbnailImageDataKey as CNKeyDescriptor]
+                if let fetched = try? contactStore.unifiedContact(withIdentifier: systemContact.identifier, keysToFetch: keys) {
+                    thumbnail = fetched.thumbnailImageData
+                }
+            }
+            
             let newContact = BlackbookContact(
                 firstName: systemContact.givenName,
                 lastName: systemContact.familyName,
                 phoneNumbers: phoneNumbers,
                 isTrashed: false,
                 contactData: data,
-                thumbnailData: systemContact.thumbnailImageData
+                thumbnailData: thumbnail
             )
             modelContext.insert(newContact)
             
