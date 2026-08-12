@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		311A8B67BE9560C19489F1AE /* ContactSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653507BA76683EAD2A0A7510 /* ContactSyncManager.swift */; };
+		4AC34856BC51E81DFD9FF529 /* DatabaseUpgrader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D5E74D66CE3061ACE4BACFB /* DatabaseUpgrader.swift */; };
 		4B9200955F48BBC2F11E880F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3DC76DEA80F5CAA937033253 /* Assets.xcassets */; };
 		4FB0B7E9B1C269B78886002E /* ContactPickerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F031C3D3BF5C47B578F8A7 /* ContactPickerManager.swift */; };
 		7FECBA3C7BAAA2463237842B /* BlackbookContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0718F16B18D36B221A5D616 /* BlackbookContact.swift */; };
@@ -22,6 +23,7 @@
 		15F031C3D3BF5C47B578F8A7 /* ContactPickerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactPickerManager.swift; sourceTree = "<group>"; };
 		31ABCF41598E898638512B51 /* ContactDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDetailView.swift; sourceTree = "<group>"; };
 		3744DE7F4CFD2EF1B4D4067B /* Blackbook.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Blackbook.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D5E74D66CE3061ACE4BACFB /* DatabaseUpgrader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseUpgrader.swift; sourceTree = "<group>"; };
 		3DC76DEA80F5CAA937033253 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		43B10A8B7DF1ED10B7C63267 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		653507BA76683EAD2A0A7510 /* ContactSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSyncManager.swift; sourceTree = "<group>"; };
@@ -66,6 +68,7 @@
 			children = (
 				87CEE025AA8E73218516D3DD /* AuthenticationManager.swift */,
 				653507BA76683EAD2A0A7510 /* ContactSyncManager.swift */,
+				3D5E74D66CE3061ACE4BACFB /* DatabaseUpgrader.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -163,6 +166,7 @@
 				C9EF05311E4A42D80FC348C1 /* ContactDetailView.swift in Sources */,
 				4FB0B7E9B1C269B78886002E /* ContactPickerManager.swift in Sources */,
 				311A8B67BE9560C19489F1AE /* ContactSyncManager.swift in Sources */,
+				4AC34856BC51E81DFD9FF529 /* DatabaseUpgrader.swift in Sources */,
 				F2FB004FFF63119B049F485D /* TrashView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

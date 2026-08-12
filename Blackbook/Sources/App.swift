@@ -70,6 +70,8 @@ struct LockScreenView: View {
 }
 
 struct MainTabView: View {
+    @Environment(\.modelContext) private var modelContext
+    
     var body: some View {
         TabView {
             AgendaView()
@@ -81,6 +83,9 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Trash", systemImage: "trash")
                 }
+        }
+        .onAppear {
+            DatabaseUpgrader.upgradeLegacyContacts(modelContext: modelContext)
         }
     }
 }
