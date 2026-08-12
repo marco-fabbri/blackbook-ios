@@ -44,3 +44,8 @@ When working on this project, `xcodegen` is used to manage and generate the Xcod
   1. Add the `com.apple.developer.icloud-services` (CloudKit) and `com.apple.developer.icloud-container-identifiers` capabilities to the `entitlements` section in `project.yml`.
   2. Explicitly set `cloudKitDatabase: .automatic` in the `ModelConfiguration`.
   3. Ensure ALL properties on your `@Model` classes either are Optionals or have explicitly defined default values (e.g. `= ""`), otherwise CloudKit sync will silently fail.
+
+# App Versioning
+
+- **Automatic Build Increment**: Every time you apply a code update, bug fix, or UI change, you MUST automatically increment the `CURRENT_PROJECT_VERSION` (build number) in the `project.yml` file (under the `settings` block) by `1`. If the property does not exist, initialize it at `1`.
+- This ensures the simulator/device correctly invalidates caches and acknowledges the update.
