@@ -3,13 +3,13 @@ import SwiftData
 
 @Model
 final class BlackbookContact {
-    var id: UUID
-    var firstName: String
-    var lastName: String
-    var phoneNumbers: [String]
-    var isTrashed: Bool
-    var contactData: Data?
-    var thumbnailData: Data?
+    var id: UUID = UUID()
+    var firstName: String = ""
+    var lastName: String = ""
+    var phoneNumbers: [String] = []
+    var isTrashed: Bool = false
+    var contactData: Data? = nil
+    var thumbnailData: Data? = nil
     
     var sortName: String {
         let sortOrder = UserDefaults.standard.string(forKey: "sortOrder") ?? "Cognome"
