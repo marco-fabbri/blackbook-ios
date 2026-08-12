@@ -37,8 +37,10 @@ struct AgendaView: View {
                         viewModel.showingContactPicker = false
                         switch result {
                         case .success(let systemContacts):
-                            viewModel.pendingImportContacts = systemContacts
-                            viewModel.showingImportConfirm = true
+                            if !systemContacts.isEmpty {
+                                viewModel.pendingImportContacts = systemContacts
+                                viewModel.showingImportConfirm = true
+                            }
                         case .failure(let error):
                             viewModel.errorMessage = error.localizedDescription
                             viewModel.showingError = true
