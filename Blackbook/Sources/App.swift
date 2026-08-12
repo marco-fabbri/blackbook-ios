@@ -90,63 +90,75 @@ struct LockScreenView: View {
 struct MainTabView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var selectedTab = 0
+    @State private var searchText = ""
     
     var body: some View {
         ZStack(alignment: .bottom) {
             // Main Content
             Group {
-                switch selectedTab {
-                case 0:
-                    AgendaView()
-                case 1:
+                if selectedTab == 0 {
+                    AgendaView(searchText: $searchText)
+                } else {
                     SettingsView()
-                default:
-                    AgendaView()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding(.bottom, 60) // Make room for the custom tab bar
             
-            // Custom Tab Bar
-            ZStack {
-                // Centered Pill (Tabs)
-                HStack(spacing: 40) {
+            // Floating iOS 27 Glass UI
+            VStack(spacing: 12) {
+                if selectedTab == 0 {
+                    // Glass Search Bar
+                    HStack {
+                        Image(systemName: "magnifyingglass").foregroundColor(.gray)
+                        TextField("Cerca contatti...", text: $searchText)
+                            .textFieldStyle(PlainTextFieldStyle())
+                        if !searchText.isEmpty {
+                            Button(action: { searchText = "" }) {
+                                Image(systemName: "xmark.circle.fill").foregroundColor(.gray)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .background(
+                        Capsule()
+                            .fill(Color(UIColor.systemBackground).opacity(0.4))
+                            .background(.ultraThinMaterial, in: Capsule())
+                    )
+                    .overlay(
+                        Capsule().stroke(Color.white.opacity(0.2), lineWidth: 0.5)
+                    )
+                    .shadow(color: Color.black.opacity(0.15), radius: 15, x: 0, y: 8)
+                    .padding(.horizontal, 24)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+                
+                // Glass Tab Bar
+                HStack(spacing: 50) {
                     TabBarButton(icon: "person.crop.circle", title: "Contatti", isSelected: selectedTab == 0) {
-                        selectedTab = 0
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                            selectedTab = 0
+                        }
                     }
                     
                     TabBarButton(icon: "gear", title: "Impostazioni", isSelected: selectedTab == 1) {
-                        selectedTab = 1
-                    }
-                }
-                .padding(.horizontal, 24)
-                .padding(.vertical, 12)
-                .background(Color(UIColor.systemBackground))
-                .clipShape(Capsule())
-                .shadow(color: Color.black.opacity(0.15), radius: 10, x: 0, y: 5)
-                
-                // Right Pill (Search)
-                HStack {
-                    Spacer()
-                    Button(action: {
-                        selectedTab = 0
-                        NotificationCenter.default.post(name: NSNotification.Name("ActivateSearch"), object: nil)
-                    }) {
-                        VStack(spacing: 4) {
-                            Image(systemName: "magnifyingglass")
-                                .font(.system(size: 24))
-                            Text("Cerca")
-                                .font(.caption2)
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                            selectedTab = 1
                         }
-                        .foregroundColor(.gray)
-                        .frame(width: 60, height: 60)
-                        .background(Color(UIColor.systemBackground))
-                        .clipShape(Circle())
-                        .shadow(color: Color.black.opacity(0.15), radius: 10, x: 0, y: 5)
                     }
                 }
+                .padding(.horizontal, 32)
+                .padding(.vertical, 14)
+                .background(
+                    Capsule()
+                        .fill(Color(UIColor.systemBackground).opacity(0.4))
+                        .background(.ultraThinMaterial, in: Capsule())
+                )
+                .overlay(
+                    Capsule().stroke(Color.white.opacity(0.2), lineWidth: 0.5)
+                )
+                .shadow(color: Color.black.opacity(0.15), radius: 15, x: 0, y: 8)
             }
-            .padding(.horizontal, 20)
             .padding(.bottom, 24)
         }
         .edgesIgnoringSafeArea(.bottom)

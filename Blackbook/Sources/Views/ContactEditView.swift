@@ -10,6 +10,7 @@ struct ContactEditView: View {
     
     @State private var firstName: String = ""
     @State private var lastName: String = ""
+    @State private var organizationName: String = ""
     @State private var phoneNumbers: [String] = []
     
     var body: some View {
@@ -18,6 +19,7 @@ struct ContactEditView: View {
                 Section(header: Text("Nome e Cognome")) {
                     TextField("Nome", text: $firstName)
                     TextField("Cognome", text: $lastName)
+                    TextField("Azienda", text: $organizationName)
                 }
                 
                 Section(header: Text("Numeri di Telefono")) {
@@ -55,6 +57,7 @@ struct ContactEditView: View {
             .onAppear {
                 firstName = blackbookContact.firstName
                 lastName = blackbookContact.lastName
+                organizationName = blackbookContact.organizationName
                 phoneNumbers = blackbookContact.phoneNumbers
             }
         }
@@ -66,6 +69,7 @@ struct ContactEditView: View {
         
         blackbookContact.firstName = firstName
         blackbookContact.lastName = lastName
+        blackbookContact.organizationName = organizationName
         blackbookContact.phoneNumbers = cleanedPhones
         
         // Update CNContact data archive so exports/restores reflect changes
@@ -75,6 +79,7 @@ struct ContactEditView: View {
             
             mutableContact.givenName = firstName
             mutableContact.familyName = lastName
+            mutableContact.organizationName = organizationName
             
             var newPhoneValues: [CNLabeledValue<CNPhoneNumber>] = []
             for phone in cleanedPhones {

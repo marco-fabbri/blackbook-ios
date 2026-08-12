@@ -173,7 +173,7 @@ struct TrashRowView: View {
             }
             
             VStack(alignment: .leading) {
-                Text("\(contact.firstName) \(contact.lastName)")
+                Text(contact.displayName)
                     .font(.headline)
                     .foregroundColor(.gray)
                 if let firstPhone = contact.phoneNumbers.first {

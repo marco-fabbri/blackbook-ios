@@ -62,6 +62,7 @@ final class ContactSyncService {
             let newContact = BlackbookContact(
                 firstName: systemContact.givenName,
                 lastName: systemContact.familyName,
+                organizationName: systemContact.organizationName,
                 phoneNumbers: phoneNumbers,
                 isTrashed: false,
                 contactData: data,

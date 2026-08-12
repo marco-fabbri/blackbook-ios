@@ -13,7 +13,7 @@ struct AgendaView: View {
     @State private var currentEditMode: EditMode = .inactive
     @State private var shareItem: ShareItem?
     
-    @State private var searchText = ""
+    @Binding var searchText: String
     
     var filteredContacts: [BlackbookContact] {
         if searchText.isEmpty {
@@ -22,6 +22,7 @@ struct AgendaView: View {
         return allContacts.filter { contact in
             contact.firstName.localizedCaseInsensitiveContains(searchText) ||
             contact.lastName.localizedCaseInsensitiveContains(searchText) ||
+            contact.organizationName.localizedCaseInsensitiveContains(searchText) ||
             (contact.phoneNumbers.first?.contains(searchText) ?? false)
         }
     }
@@ -129,7 +130,9 @@ struct AgendaView: View {
                 }
             }
             .listStyle(PlainListStyle())
-            .searchable(text: $searchText, prompt: "Cerca contatti...")
+            .safeAreaInset(edge: .bottom) {
+                Color.clear.frame(height: 130) // Spazio per le capsule di vetro fluttuanti
+            }
         }
         .navigationTitle("Contatti")
         .navigationBarTitleDisplayMode(.large)
@@ -220,7 +223,7 @@ struct AgendaRowView: View {
             }
             
             VStack(alignment: .leading) {
-                Text("\(contact.firstName) \(contact.lastName)")
+                Text(contact.displayName)
                     .font(.headline)
                 if let firstPhone = contact.phoneNumbers.first {
                     Text(firstPhone)

@@ -30,7 +30,7 @@ struct ContactDetailView: View {
                             .foregroundColor(.gray)
                     }
                     
-                    Text("\(blackbookContact.firstName) \(blackbookContact.lastName)")
+                    Text(blackbookContact.displayName)
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .multilineTextAlignment(.center)
