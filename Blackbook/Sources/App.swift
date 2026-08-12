@@ -89,26 +89,73 @@ struct LockScreenView: View {
 
 struct MainTabView: View {
     @Environment(\.modelContext) private var modelContext
+    @State private var selectedTab = 0
     
     var body: some View {
-        TabView {
-            AgendaView()
-                .tabItem {
-                    Label("Contatti", systemImage: "person.crop.circle")
+        ZStack(alignment: .bottom) {
+            // Main Content
+            Group {
+                switch selectedTab {
+                case 0:
+                    AgendaView()
+                case 1:
+                    SettingsView()
+                case 2:
+                    SearchView()
+                default:
+                    AgendaView()
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(.bottom, 60) // Make room for the custom tab bar
+            
+            // Custom Tab Bar
+            HStack {
+                TabBarButton(icon: "person.crop.circle", title: "Contatti", isSelected: selectedTab == 0) {
+                    selectedTab = 0
                 }
                 
-            SettingsView()
-                .tabItem {
-                    Label("Impostazioni", systemImage: "gear")
+                TabBarButton(icon: "gear", title: "Impostazioni", isSelected: selectedTab == 1) {
+                    selectedTab = 1
                 }
                 
-            SearchView()
-                .tabItem {
-                    Label("Cerca", systemImage: "magnifyingglass")
+                Spacer()
+                
+                TabBarButton(icon: "magnifyingglass", title: "Cerca", isSelected: selectedTab == 2) {
+                    selectedTab = 2
                 }
+            }
+            .padding(.horizontal, 30)
+            .padding(.top, 12)
+            .padding(.bottom, 24)
+            .background(
+                Color(UIColor.systemBackground)
+                    .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: -5)
+            )
         }
+        .edgesIgnoringSafeArea(.bottom)
         .onAppear {
             DatabaseUpgrader.upgradeLegacyContacts(modelContext: modelContext)
+        }
+    }
+}
+
+struct TabBarButton: View {
+    let icon: String
+    let title: String
+    let isSelected: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.system(size: 24))
+                Text(title)
+                    .font(.caption2)
+            }
+            .foregroundColor(isSelected ? .blue : .gray)
+            .frame(minWidth: 50)
         }
     }
 }
