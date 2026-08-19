@@ -17,7 +17,7 @@ final class BlackbookContact {
         if fullName.isEmpty && !organizationName.isEmpty {
             return organizationName
         } else if fullName.isEmpty {
-            return "Sconosciuto"
+            return "Unknown"
         }
         return fullName
     }
@@ -27,8 +27,8 @@ final class BlackbookContact {
             return organizationName
         }
         
-        let sortOrder = UserDefaults.standard.string(forKey: "sortOrder") ?? "Cognome"
-        if sortOrder == "Nome" {
+        let sortOrder = UserDefaults.standard.string(forKey: "sortOrder") ?? "Last Name"
+        if sortOrder == "First Name" {
             return firstName.isEmpty ? lastName : firstName
         } else {
             return lastName.isEmpty ? firstName : lastName

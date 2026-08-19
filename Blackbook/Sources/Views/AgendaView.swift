@@ -7,7 +7,7 @@ struct AgendaView: View {
     @Query(filter: #Predicate<BlackbookContact> { $0.isTrashed == false }) private var allContacts: [BlackbookContact]
     
     @AppStorage("showListImages") private var showImages = true
-    @AppStorage("sortOrder") private var sortOrder = "Cognome"
+    @AppStorage("sortOrder") private var sortOrder = "Last Name"
     
     @StateObject private var viewModel = AgendaViewModel()
     @State private var currentEditMode: EditMode = .inactive
@@ -47,15 +47,15 @@ struct AgendaView: View {
                     }
                 }
                 // Error Alert
-                .alert("Errore", isPresented: $viewModel.showingError) {
+                .alert("Error", isPresented: $viewModel.showingError) {
                     Button("OK", role: .cancel) { }
                 } message: {
                     Text(viewModel.errorMessage)
                 }
                 // Import Confirm
-                .alert("Conferma Importazione", isPresented: $viewModel.showingImportConfirm) {
-                    Button("Annulla", role: .cancel) { }
-                    Button("Importa", role: .destructive) {
+                .alert("Confirm Import", isPresented: $viewModel.showingImportConfirm) {
+                    Button("Cancel", role: .cancel) { }
+                    Button("Import", role: .destructive) {
                         let contactsToImport = viewModel.pendingImportContacts
                         Task {
                             do {
@@ -70,39 +70,42 @@ struct AgendaView: View {
                         }
                     }
                 } message: {
-                    Text("Attenzione: i contatti selezionati verranno importati in Blackbook e RIMOSSI definitivamente dalla rubrica di iOS. Vuoi procedere?")
+                    Text("Warning: selected contacts will be imported into Blackbook and permanently REMOVED from the iOS address book. Proceed?")
                 }
                 // Single Delete Confirm
-                .alert("Sposta nel cestino", isPresented: $viewModel.showingSingleDeleteConfirm) {
-                    Button("Annulla", role: .cancel) { }
-                    Button("Sposta", role: .destructive) {
+                .alert("Move to Trash", isPresented: $viewModel.showingSingleDeleteConfirm) {
+                    Button("Cancel", role: .cancel) { }
+                    Button("Move", role: .destructive) {
                         if let contact = viewModel.contactToActOn {
                             viewModel.trashContact(contact, context: modelContext)
                         }
                     }
                 } message: {
-                    Text("Vuoi spostare questo contatto nel cestino?")
+                    Text("Move this contact to the trash?")
                 }
                 // Batch Delete Confirm
-                .alert("Sposta selezionati", isPresented: $viewModel.showingBatchDeleteConfirm) {
-                    Button("Annulla", role: .cancel) { }
-                    Button("Sposta", role: .destructive) {
+                .alert("Move Selected", isPresented: $viewModel.showingBatchDeleteConfirm) {
+                    Button("Cancel", role: .cancel) { }
+                    Button("Move", role: .destructive) {
                         viewModel.batchTrash(allContacts: allContacts, context: modelContext, editMode: $currentEditMode)
                     }
                 } message: {
-                    Text("Vuoi spostare \(viewModel.selectedContactIDs.count) contatti nel cestino?")
+                    Text("Move \(viewModel.selectedContactIDs.count) contacts to the trash?")
                 }
                 // Batch Restore Confirm
-                .alert("Riporta su iOS", isPresented: $viewModel.showingBatchRestoreConfirm) {
-                    Button("Annulla", role: .cancel) { }
-                    Button("Riporta") {
+                .alert("Restore to iOS", isPresented: $viewModel.showingBatchRestoreConfirm) {
+                    Button("Cancel", role: .cancel) { }
+                    Button("Restore") {
                         viewModel.batchRestore(allContacts: allContacts, context: modelContext, editMode: $currentEditMode)
                     }
                 } message: {
-                    Text("Vuoi riportare \(viewModel.selectedContactIDs.count) contatti nella rubrica di sistema?")
+                    Text("Restore \(viewModel.selectedContactIDs.count) contacts to the system address book?")
                 }
                 .onDisappear {
                     currentEditMode = .inactive
+                }
+                .onAppear {
+                    DatabaseUpgrader.upgradeLegacyContacts(modelContext: modelContext)
                 }
         }
     }
@@ -112,30 +115,18 @@ struct AgendaView: View {
         let grouped = viewModel.groupedContacts(from: filteredContacts, sortOrder: sortOrder)
         let keys = viewModel.sortedKeys(for: grouped)
         
-        ZStack(alignment: .bottom) {
-            List(selection: $viewModel.selectedContactIDs) {
-                ForEach(keys, id: \.self) { key in
-                    Section(header: Text(key)) {
-                        ForEach(grouped[key] ?? []) { contact in
-                            AgendaCell(
-                                contact: contact,
-                                showImages: showImages,
-                                onDelete: {
-                                    viewModel.contactToActOn = contact
-                                    viewModel.showingSingleDeleteConfirm = true
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-            .listStyle(PlainListStyle())
-            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Cerca contatti...")
-            .safeAreaInset(edge: .bottom) {
-                Color.clear.frame(height: 80) // Spazio per la capsula di vetro fluttuante
-            }
+        ContactListView(
+            keys: keys,
+            grouped: grouped,
+            viewModel: viewModel,
+            showImages: showImages
+        )
+        .safeAreaInset(edge: .bottom) {
+            FloatingBottomBar(searchText: $searchText, onAddContact: {
+                viewModel.showingContactPicker = true
+            })
         }
-        .navigationTitle("Contatti")
+        .navigationTitle("Contacts")
         .navigationBarTitleDisplayMode(.large)
         .sheet(item: $shareItem) { item in
             ActivityViewController(activityItems: [item.url])
@@ -148,25 +139,31 @@ struct AgendaView: View {
                             currentEditMode = currentEditMode.isEditing ? .inactive : .active
                         }
                     }) {
-                        Text(currentEditMode.isEditing ? "Fine" : "Modifica")
+                        Text(currentEditMode.isEditing ? "Done" : "Edit")
                     }
                 }
             }
             if currentEditMode.isEditing == false {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { viewModel.showingContactPicker = true }) {
-                        Image(systemName: "plus")
+                    NavigationLink(destination: SettingsView()) {
+                        Image(systemName: "gear")
                     }
                 }
             } else {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Button(action: { viewModel.showingBatchRestoreConfirm = true }) {
+                        Image(systemName: "arrow.uturn.backward")
+                            .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .blue)
+                    }
+                    .disabled(viewModel.selectedContactIDs.isEmpty)
+                    
                     Button(action: { 
                         let selectedContacts = allContacts.filter { viewModel.selectedContactIDs.contains($0.id) }
                         if let url = ExportService.shared.generateCSV(from: selectedContacts) {
                             shareItem = ShareItem(url: url)
                         }
                     }) {
-                        Image(systemName: "arrow.up.doc")
+                        Image(systemName: "square.and.arrow.up")
                             .foregroundColor(viewModel.selectedContactIDs.isEmpty ? .gray : .blue)
                     }
                     .disabled(viewModel.selectedContactIDs.isEmpty)
@@ -248,5 +245,80 @@ struct AgendaRowView: View {
             return contact.imageData
         }
         return nil
+    }
+}
+
+struct FloatingBottomBar: View {
+    @Binding var searchText: String
+    let onAddContact: () -> Void
+    
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(.secondary)
+                .font(.system(size: 18))
+            
+            TextField("Search contacts...", text: $searchText)
+                .textFieldStyle(PlainTextFieldStyle())
+            
+            if !searchText.isEmpty {
+                Button(action: { searchText = "" }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            Divider()
+                .frame(height: 20)
+                .padding(.horizontal, 4)
+            
+            Button(action: onAddContact) {
+                Image(systemName: "plus")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundColor(.blue)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(.ultraThinMaterial, in: Capsule())
+        .overlay(
+            Capsule().stroke(Color.white.opacity(0.3), lineWidth: 0.5)
+        )
+        .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+        .padding(.horizontal, 24)
+        .padding(.bottom, 8)
+    }
+}
+
+struct ContactListView: View {
+    let keys: [String]
+    let grouped: [String: [BlackbookContact]]
+    @ObservedObject var viewModel: AgendaViewModel
+    let showImages: Bool
+    
+    var body: some View {
+        List(selection: $viewModel.selectedContactIDs) {
+            ForEach(keys, id: \.self) { key in
+                Section(header: Text(key)) {
+                    ForEach(grouped[key] ?? []) { contact in
+                        AgendaCell(
+                            contact: contact,
+                            showImages: showImages,
+                            onDelete: {
+                                viewModel.contactToActOn = contact
+                                viewModel.showingSingleDeleteConfirm = true
+                            }
+                        )
+                    }
+                }
+            }
+        }
+        .listStyle(PlainListStyle())
+        .scrollDismissesKeyboard(.immediately)
+        .simultaneousGesture(
+            TapGesture().onEnded {
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            }
+        )
     }
 }

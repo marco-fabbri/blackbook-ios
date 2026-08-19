@@ -17,9 +17,9 @@ final class ContactSyncService {
         var errorDescription: String? {
             switch self {
             case .accessDenied:
-                return "L'accesso ai contatti è stato negato."
+                return "Contacts access denied."
             case .unarchivingFailed:
-                return "Impossibile recuperare i dati originali del contatto."
+                return "Unable to recover original contact data."
             case .unknown(let error):
                 return error.localizedDescription
             }

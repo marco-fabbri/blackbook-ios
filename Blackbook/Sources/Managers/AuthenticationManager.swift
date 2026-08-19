@@ -24,9 +24,9 @@ class AuthenticationManager: ObservableObject {
         
         if context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) {
             let reason = "Unlock to access Blackbook"
-            context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason) { success, authenticationError in
+            context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason) { [weak self] success, authenticationError in
                 DispatchQueue.main.async {
-                    self.isAuthenticated = success
+                    self?.isAuthenticated = success
                 }
             }
         } else {

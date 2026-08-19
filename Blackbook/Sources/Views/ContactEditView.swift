@@ -16,15 +16,15 @@ struct ContactEditView: View {
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("Nome e Cognome")) {
-                    TextField("Nome", text: $firstName)
-                    TextField("Cognome", text: $lastName)
-                    TextField("Azienda", text: $organizationName)
+                Section(header: Text("First and Last Name")) {
+                    TextField("First Name", text: $firstName)
+                    TextField("Last Name", text: $lastName)
+                    TextField("Company", text: $organizationName)
                 }
                 
-                Section(header: Text("Numeri di Telefono")) {
+                Section(header: Text("Phone Numbers")) {
                     ForEach(phoneNumbers.indices, id: \.self) { index in
-                        TextField("Telefono", text: $phoneNumbers[index])
+                        TextField("Phone", text: $phoneNumbers[index])
                             .keyboardType(.phonePad)
                     }
                     .onDelete { indices in
@@ -34,20 +34,20 @@ struct ContactEditView: View {
                     Button(action: {
                         phoneNumbers.append("")
                     }) {
-                        Label("Aggiungi numero", systemImage: "plus.circle.fill")
+                        Label("Add Phone Number", systemImage: "plus.circle.fill")
                     }
                 }
             }
-            .navigationTitle("Modifica Contatto")
+            .navigationTitle("Edit Contact")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Annulla") {
+                    Button("Cancel") {
                         dismiss()
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Salva") {
+                    Button("Save") {
                         saveChanges()
                         dismiss()
                     }

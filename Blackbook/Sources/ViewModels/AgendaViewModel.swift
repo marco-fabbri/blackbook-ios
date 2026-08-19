@@ -28,7 +28,7 @@ final class AgendaViewModel: ObservableObject {
     // Formatting & Grouping
     func groupedContacts(from contacts: [BlackbookContact], sortOrder: String) -> [String: [BlackbookContact]] {
         let sorted = contacts.sorted {
-            if sortOrder == "Nome" {
+            if sortOrder == "First Name" {
                 return $0.sortName < $1.sortName
             } else {
                 return $0.sortName < $1.sortName
@@ -71,7 +71,7 @@ final class AgendaViewModel: ObservableObject {
             }
             
             if !errors.isEmpty {
-                self.errorMessage = "Alcuni contatti non sono stati ripristinati: \n" + errors.joined(separator: "\n")
+                self.errorMessage = "Some contacts were not restored: \n" + errors.joined(separator: "\n")
                 self.showingError = true
             }
             self.selectedContactIDs.removeAll()

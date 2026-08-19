@@ -6,7 +6,7 @@ struct TrashView: View {
     @Query(filter: #Predicate<BlackbookContact> { $0.isTrashed == true }) private var trashedContacts: [BlackbookContact]
     
     @AppStorage("showListImages") private var showImages = true
-    @AppStorage("sortOrder") private var sortOrder = "Cognome"
+    @AppStorage("sortOrder") private var sortOrder = "Last Name"
     
     @StateObject private var viewModel = TrashViewModel()
     @State private var currentEditMode: EditMode = .inactive
@@ -15,44 +15,44 @@ struct TrashView: View {
         mainContent
             .environment(\.editMode, $currentEditMode)
             // Single Delete Confirm
-            .alert("Elimina definitivamente", isPresented: $viewModel.showingSingleDeleteConfirm) {
-                Button("Annulla", role: .cancel) { }
-                Button("Elimina", role: .destructive) {
+            .alert("Delete Permanently", isPresented: $viewModel.showingSingleDeleteConfirm) {
+                Button("Cancel", role: .cancel) { }
+                Button("Delete", role: .destructive) {
                     if let contact = viewModel.contactToActOn {
                         viewModel.permanentlyDelete(contact, context: modelContext)
                     }
                 }
             } message: {
-                Text("Vuoi eliminare questo contatto in modo permanente? L'azione non può essere annullata.")
+                Text("Permanently delete this contact? This action cannot be undone.")
             }
             // Single Restore Confirm
-            .alert("Ripristina contatto", isPresented: $viewModel.showingSingleRestoreConfirm) {
-                Button("Annulla", role: .cancel) { }
-                Button("Ripristina") {
+            .alert("Restore Contact", isPresented: $viewModel.showingSingleRestoreConfirm) {
+                Button("Cancel", role: .cancel) { }
+                Button("Restore") {
                     if let contact = viewModel.contactToActOn {
                         viewModel.restoreContact(contact, context: modelContext)
                     }
                 }
             } message: {
-                Text("Vuoi ripristinare questo contatto nell'Agenda?")
+                Text("Restore this contact to the Agenda?")
             }
             // Batch Delete Confirm
-            .alert("Elimina selezionati", isPresented: $viewModel.showingBatchDeleteConfirm) {
-                Button("Annulla", role: .cancel) { }
-                Button("Elimina tutti", role: .destructive) {
+            .alert("Delete Selected", isPresented: $viewModel.showingBatchDeleteConfirm) {
+                Button("Cancel", role: .cancel) { }
+                Button("Delete All", role: .destructive) {
                     viewModel.batchDelete(trashedContacts: trashedContacts, context: modelContext, editMode: $currentEditMode)
                 }
             } message: {
-                Text("Vuoi eliminare definitivamente \(viewModel.selectedContactIDs.count) contatti? L'azione non può essere annullata.")
+                Text("Permanently delete \(viewModel.selectedContactIDs.count) contacts? This action cannot be undone.")
             }
             // Batch Restore Confirm
-            .alert("Ripristina selezionati", isPresented: $viewModel.showingBatchRestoreConfirm) {
-                Button("Annulla", role: .cancel) { }
-                Button("Ripristina tutti") {
+            .alert("Restore Selected", isPresented: $viewModel.showingBatchRestoreConfirm) {
+                Button("Cancel", role: .cancel) { }
+                Button("Restore All") {
                     viewModel.batchRestore(trashedContacts: trashedContacts, context: modelContext, editMode: $currentEditMode)
                 }
             } message: {
-                Text("Vuoi ripristinare \(viewModel.selectedContactIDs.count) contatti nell'Agenda?")
+                Text("Restore \(viewModel.selectedContactIDs.count) contacts to the Agenda?")
             }
             .onDisappear {
                 currentEditMode = .inactive
@@ -82,7 +82,7 @@ struct TrashView: View {
             }
             .listStyle(PlainListStyle())
         }
-        .navigationTitle("Cestino")
+        .navigationTitle("Trash")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             if currentEditMode.isEditing == false {
@@ -92,7 +92,7 @@ struct TrashView: View {
                             currentEditMode = .active
                         }
                     }) {
-                        Text("Modifica")
+                        Text("Edit")
                     }
                 }
             } else {
@@ -102,7 +102,7 @@ struct TrashView: View {
                             currentEditMode = .inactive
                         }
                     }) {
-                        Text("Fine")
+                        Text("Done")
                     }
                 }
                 

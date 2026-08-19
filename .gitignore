@@ -1,5 +1,6 @@
 # Xcode
 .DS_Store
+*/.DS_Store
 build/
 *.pbxuser
 !default.pbxuser
@@ -10,6 +11,7 @@ build/
 *.perspectivev3
 !default.perspectivev3
 xcuserdata/
+*.xcuserdatad
 *.xccheckout
 *.moved-aside
 DerivedData/
@@ -26,3 +28,14 @@ Pods/
 
 # Swift Package Manager
 .build/
+.swiftpm/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
+# Tooling & Agent metadata
+.agents/
+.gemini/

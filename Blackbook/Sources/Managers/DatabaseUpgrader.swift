@@ -27,10 +27,10 @@ class DatabaseUpgrader {
             }
             
             try modelContext.save()
-            print("Aggiornati \(legacyContacts.count) contatti legacy al nuovo formato V2.")
+            print("Upgraded \(legacyContacts.count) legacy contacts to V2 format.")
             
         } catch {
-            print("Errore durante l'upgrade del database: \(error)")
+            print("Error during database upgrade: \(error)")
         }
     }
 }

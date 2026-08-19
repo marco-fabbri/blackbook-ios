@@ -11,7 +11,7 @@ final class ExportService {
     
     // Generates a CSV file URL
     func generateCSV(from contacts: [BlackbookContact]) -> URL? {
-        var csvText = "Nome,Cognome,Telefono\n"
+        var csvText = "First Name,Last Name,Phone\n"
         
         for contact in contacts {
             let firstName = contact.firstName.replacingOccurrences(of: ",", with: " ")
@@ -22,7 +22,7 @@ final class ExportService {
         }
         
         let tempDir = FileManager.default.temporaryDirectory
-        let fileURL = tempDir.appendingPathComponent("Contatti_Blackbook.csv")
+        let fileURL = tempDir.appendingPathComponent("Blackbook_Contacts.csv")
         
         do {
             try csvText.write(to: fileURL, atomically: true, encoding: .utf8)
@@ -37,7 +37,7 @@ final class ExportService {
     func generatePDF(from contacts: [BlackbookContact]) -> URL? {
         let pdfMetaData = [
             kCGPDFContextCreator: "Blackbook App",
-            kCGPDFContextAuthor: "Utente"
+            kCGPDFContextAuthor: "User"
         ]
         
         let format = UIGraphicsPDFRendererFormat()
@@ -50,7 +50,7 @@ final class ExportService {
         let renderer = UIGraphicsPDFRenderer(bounds: pageRect, format: format)
         
         let tempDir = FileManager.default.temporaryDirectory
-        let fileURL = tempDir.appendingPathComponent("Contatti_Blackbook.pdf")
+        let fileURL = tempDir.appendingPathComponent("Blackbook_Contacts.pdf")
         
         do {
             try renderer.writePDF(to: fileURL) { context in
@@ -63,7 +63,7 @@ final class ExportService {
                     .font: UIFont.systemFont(ofSize: 12)
                 ]
                 
-                "Blackbook Contatti".draw(at: CGPoint(x: 20, y: 20), withAttributes: titleAttributes)
+                "Blackbook Contacts".draw(at: CGPoint(x: 20, y: 20), withAttributes: titleAttributes)
                 
                 var yOffset: CGFloat = 60
                 
@@ -73,7 +73,7 @@ final class ExportService {
                         yOffset = 20
                     }
                     
-                    let phone = contact.phoneNumbers.first ?? "Nessun numero"
+                    let phone = contact.phoneNumbers.first ?? "No phone number"
                     let contactString = "\(contact.firstName) \(contact.lastName) - \(phone)"
                     contactString.draw(at: CGPoint(x: 20, y: yOffset), withAttributes: textAttributes)
                     yOffset += 20

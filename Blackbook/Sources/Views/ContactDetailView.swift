@@ -40,13 +40,13 @@ struct ContactDetailView: View {
                 // Quick Actions
                 HStack(spacing: 24) {
                     if let firstPhone = blackbookContact.phoneNumbers.first {
-                        QuickActionButton(title: "Messaggio", systemImage: "message.fill", color: .blue) {
+                        QuickActionButton(title: "Message", systemImage: "message.fill", color: .blue) {
                             if let url = URL(string: "sms://\(firstPhone.replacingOccurrences(of: " ", with: ""))") {
                                 UIApplication.shared.open(url)
                             }
                         }
                         
-                        QuickActionButton(title: "Chiama", systemImage: "phone.fill", color: .green) {
+                        QuickActionButton(title: "Call", systemImage: "phone.fill", color: .green) {
                             if let url = URL(string: "tel://\(firstPhone.replacingOccurrences(of: " ", with: ""))") {
                                 UIApplication.shared.open(url)
                             }
@@ -59,7 +59,7 @@ struct ContactDetailView: View {
                 VStack(spacing: 0) {
                     ForEach(blackbookContact.phoneNumbers, id: \.self) { phone in
                         VStack(alignment: .leading) {
-                            Text("Cellulare") // default label
+                            Text("Mobile") // default label
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             Text(phone)
@@ -82,7 +82,7 @@ struct ContactDetailView: View {
                 // Extra actions
                 VStack(spacing: 0) {
                     Button(action: { showingRestoreConfirm = true }) {
-                        Text("Riporta su iOS")
+                        Text("Restore to iOS")
                             .foregroundColor(.blue)
                             .padding()
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -101,7 +101,7 @@ struct ContactDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Modifica") {
+                Button("Edit") {
                     showingEditSheet = true
                 }
             }
@@ -109,18 +109,18 @@ struct ContactDetailView: View {
         .sheet(isPresented: $showingEditSheet) {
             ContactEditView(blackbookContact: blackbookContact)
         }
-        .alert("Errore", isPresented: $showingRestoreError) {
+        .alert("Error", isPresented: $showingRestoreError) {
             Button("OK", role: .cancel) { }
         } message: {
             Text(errorMessage)
         }
-        .alert("Ripristina su iOS", isPresented: $showingRestoreConfirm) {
-            Button("Annulla", role: .cancel) { }
-            Button("Ripristina", role: .destructive) {
+        .alert("Restore to iOS", isPresented: $showingRestoreConfirm) {
+            Button("Cancel", role: .cancel) { }
+            Button("Restore", role: .destructive) {
                 restoreContact()
             }
         } message: {
-            Text("Attenzione: questo contatto verrà reinserito nella rubrica di iOS e RIMOSSO definitivamente da Blackbook. Vuoi procedere?")
+            Text("Warning: this contact will be restored to the iOS address book and permanently REMOVED from Blackbook. Proceed?")
         }
     }
     
