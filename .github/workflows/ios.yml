@@ -1,16 +1,10 @@
-name: iOS CI
-
-    on:
-      push:
-        branches: [ "main" ]
-      pull_request:
-        branches: [ "main" ]
+    name: iOS CI
+    on: [push, pull_request]
 
     jobs:
       build:
         name: Build
         runs-on: macos-latest
-
         steps:
           - name: Checkout
             uses: actions/checkout@v4
