@@ -18,6 +18,9 @@ DerivedData/
 *.hmap
 *.ipa
 *.xcuserstate
+*.dSYM.zip
+*.dSYM
+*.xcresult
 project.xcworkspace/
 !default.xcworkspace/
 

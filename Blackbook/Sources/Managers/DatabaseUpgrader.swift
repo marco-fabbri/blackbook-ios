@@ -2,6 +2,7 @@ import Foundation
 import SwiftData
 import Contacts
 
+@MainActor
 class DatabaseUpgrader {
     static func upgradeLegacyContacts(modelContext: ModelContext) {
         do {

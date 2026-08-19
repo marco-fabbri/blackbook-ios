@@ -25,6 +25,10 @@ struct ContactPickerManager: UIViewControllerRepresentable {
             self.parent = parent
         }
         
+        func contactPicker(_ picker: CNContactPickerViewController, didSelect contact: CNContact) {
+            parent.completionHandler(.success([contact]))
+        }
+        
         func contactPicker(_ picker: CNContactPickerViewController, didSelect contacts: [CNContact]) {
             parent.completionHandler(.success(contacts))
         }

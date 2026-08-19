@@ -23,11 +23,12 @@ struct ContactEditView: View {
                 }
                 
                 Section(header: Text("Phone Numbers")) {
-                    ForEach(0..<phoneNumbers.count, id: \.self) { index in
-                        if index < phoneNumbers.count {
-                            TextField("Phone", text: $phoneNumbers[index])
-                                .keyboardType(.phonePad)
-                        }
+                    ForEach(phoneNumbers.indices, id: \.self) { index in
+                        TextField("Phone", text: Binding(
+                            get: { phoneNumbers.indices.contains(index) ? phoneNumbers[index] : "" },
+                            set: { if phoneNumbers.indices.contains(index) { phoneNumbers[index] = $0 } }
+                        ))
+                        .keyboardType(.phonePad)
                     }
                     .onDelete { indices in
                         phoneNumbers.remove(atOffsets: indices)

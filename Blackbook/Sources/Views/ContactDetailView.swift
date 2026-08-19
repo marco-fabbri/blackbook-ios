@@ -148,16 +148,14 @@ struct ContactDetailView: View {
     
     private func openPhone(phone: String) {
         let clean = cleanedPhoneNumber(phone)
-        if let url = URL(string: "tel://\(clean)") {
-            UIApplication.shared.open(url)
-        }
+        guard !clean.isEmpty, let url = URL(string: "tel://\(clean)") else { return }
+        UIApplication.shared.open(url)
     }
     
     private func openSMS(phone: String) {
         let clean = cleanedPhoneNumber(phone)
-        if let url = URL(string: "sms://\(clean)") {
-            UIApplication.shared.open(url)
-        }
+        guard !clean.isEmpty, let url = URL(string: "sms://\(clean)") else { return }
+        UIApplication.shared.open(url)
     }
     
     private func restoreContact() {
