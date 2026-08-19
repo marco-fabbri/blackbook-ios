@@ -44,14 +44,22 @@ final class BlackbookContact {
     }
     
     func sortName(for sortOrder: String) -> String {
-        if firstName.isEmpty && lastName.isEmpty && !organizationName.isEmpty {
-            return organizationName
+        let trimmedFirst = firstName.trimmingCharacters(in: .whitespaces)
+        let trimmedLast = lastName.trimmingCharacters(in: .whitespaces)
+        let trimmedOrg = organizationName.trimmingCharacters(in: .whitespaces)
+        
+        if trimmedFirst.isEmpty && trimmedLast.isEmpty && !trimmedOrg.isEmpty {
+            return trimmedOrg
         }
         
         if sortOrder == "First Name" {
-            return firstName.isEmpty ? lastName : firstName
+            if !trimmedFirst.isEmpty { return trimmedFirst }
+            if !trimmedLast.isEmpty { return trimmedLast }
+            return trimmedOrg
         } else {
-            return lastName.isEmpty ? firstName : lastName
+            if !trimmedLast.isEmpty { return trimmedLast }
+            if !trimmedFirst.isEmpty { return trimmedFirst }
+            return trimmedOrg
         }
     }
     
@@ -61,7 +69,7 @@ final class BlackbookContact {
     }
     
     func sortInitial(for sortOrder: String) -> String {
-        guard let firstChar = sortName(for: sortOrder).first else { return "#" }
+        guard let firstChar = sortName(for: sortOrder).first, firstChar.isLetter else { return "#" }
         return String(firstChar).uppercased()
     }
     

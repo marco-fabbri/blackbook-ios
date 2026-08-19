@@ -34,50 +34,67 @@ struct ContactDetailView: View {
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .multilineTextAlignment(.center)
+                    
+                    if !blackbookContact.organizationName.isEmpty && (blackbookContact.displayName != blackbookContact.organizationName) {
+                        Text(blackbookContact.organizationName)
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+                    }
                 }
                 .padding(.top, 20)
                 
                 // Quick Actions
-                HStack(spacing: 24) {
-                    if let firstPhone = blackbookContact.phoneNumbers.first {
+                if let firstPhone = blackbookContact.phoneNumbers.first {
+                    HStack(spacing: 24) {
                         QuickActionButton(title: "Message", systemImage: "message.fill", color: .blue) {
-                            if let url = URL(string: "sms://\(firstPhone.replacingOccurrences(of: " ", with: ""))") {
-                                UIApplication.shared.open(url)
-                            }
+                            openSMS(phone: firstPhone)
                         }
                         
                         QuickActionButton(title: "Call", systemImage: "phone.fill", color: .green) {
-                            if let url = URL(string: "tel://\(firstPhone.replacingOccurrences(of: " ", with: ""))") {
-                                UIApplication.shared.open(url)
+                            openPhone(phone: firstPhone)
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+                
+                // Phone Numbers List
+                if !blackbookContact.phoneNumbers.isEmpty {
+                    VStack(spacing: 0) {
+                        ForEach(Array(blackbookContact.phoneNumbers.enumerated()), id: \.offset) { index, phone in
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Phone \(index + 1)")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    Text(phone)
+                                        .font(.body)
+                                        .foregroundColor(.primary)
+                                }
+                                Spacer()
+                                Button(action: { openPhone(phone: phone) }) {
+                                    Image(systemName: "phone.fill")
+                                        .foregroundColor(.green)
+                                        .padding(8)
+                                }
+                                Button(action: { openSMS(phone: phone) }) {
+                                    Image(systemName: "message.fill")
+                                        .foregroundColor(.blue)
+                                        .padding(8)
+                                }
+                            }
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color(UIColor.secondarySystemGroupedBackground))
+                            
+                            if index < blackbookContact.phoneNumbers.count - 1 {
+                                Divider()
+                                    .padding(.leading)
                             }
                         }
                     }
+                    .cornerRadius(10)
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal)
-                
-                // Phone Numbers List
-                VStack(spacing: 0) {
-                    ForEach(blackbookContact.phoneNumbers, id: \.self) { phone in
-                        VStack(alignment: .leading) {
-                            Text("Mobile") // default label
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            Text(phone)
-                                .font(.body)
-                                .foregroundColor(.primary)
-                        }
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color(UIColor.secondarySystemGroupedBackground))
-                        
-                        if phone != blackbookContact.phoneNumbers.last {
-                            Divider()
-                                .padding(.leading)
-                        }
-                    }
-                }
-                .cornerRadius(10)
-                .padding(.horizontal)
                 
                 // Extra actions
                 VStack(spacing: 0) {
@@ -121,6 +138,25 @@ struct ContactDetailView: View {
             }
         } message: {
             Text("Warning: this contact will be restored to the iOS address book and permanently REMOVED from Blackbook. Proceed?")
+        }
+    }
+    
+    private func cleanedPhoneNumber(_ raw: String) -> String {
+        let allowed = CharacterSet.decimalDigits.union(CharacterSet(charactersIn: "+"))
+        return raw.unicodeScalars.filter { allowed.contains($0) }.map(String.init).joined()
+    }
+    
+    private func openPhone(phone: String) {
+        let clean = cleanedPhoneNumber(phone)
+        if let url = URL(string: "tel://\(clean)") {
+            UIApplication.shared.open(url)
+        }
+    }
+    
+    private func openSMS(phone: String) {
+        let clean = cleanedPhoneNumber(phone)
+        if let url = URL(string: "sms://\(clean)") {
+            UIApplication.shared.open(url)
         }
     }
     

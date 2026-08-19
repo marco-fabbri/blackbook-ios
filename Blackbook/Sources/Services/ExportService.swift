@@ -9,15 +9,23 @@ final class ExportService {
     
     private init() {}
     
+    private func escapeCSVField(_ text: String) -> String {
+        if text.contains(",") || text.contains("\"") || text.contains("\n") || text.contains("\r") {
+            let escaped = text.replacingOccurrences(of: "\"", with: "\"\"")
+            return "\"\(escaped)\""
+        }
+        return text
+    }
+    
     // Generates a CSV file URL
     func generateCSV(from contacts: [BlackbookContact]) -> URL? {
         var csvText = "First Name,Last Name,Company,Phone Numbers\n"
         
         for contact in contacts {
-            let firstName = contact.firstName.replacingOccurrences(of: ",", with: " ")
-            let lastName = contact.lastName.replacingOccurrences(of: ",", with: " ")
-            let company = contact.organizationName.replacingOccurrences(of: ",", with: " ")
-            let phones = contact.phoneNumbers.joined(separator: "; ").replacingOccurrences(of: ",", with: " ")
+            let firstName = escapeCSVField(contact.firstName)
+            let lastName = escapeCSVField(contact.lastName)
+            let company = escapeCSVField(contact.organizationName)
+            let phones = escapeCSVField(contact.phoneNumbers.joined(separator: "; "))
             
             csvText.append("\(firstName),\(lastName),\(company),\(phones)\n")
         }
@@ -68,16 +76,20 @@ final class ExportService {
                 
                 var yOffset: CGFloat = 60
                 
-                for contact in contacts {
-                    if yOffset > pageHeight - 50 {
-                        context.beginPage()
-                        yOffset = 20
+                if contacts.isEmpty {
+                    "No contacts to export.".draw(at: CGPoint(x: 20, y: yOffset), withAttributes: textAttributes)
+                } else {
+                    for contact in contacts {
+                        if yOffset > pageHeight - 50 {
+                            context.beginPage()
+                            yOffset = 20
+                        }
+                        
+                        let phones = contact.phoneNumbers.isEmpty ? "No phone number" : contact.phoneNumbers.joined(separator: ", ")
+                        let contactString = "\(contact.displayName) - \(phones)"
+                        contactString.draw(at: CGPoint(x: 20, y: yOffset), withAttributes: textAttributes)
+                        yOffset += 20
                     }
-                    
-                    let phones = contact.phoneNumbers.isEmpty ? "No phone number" : contact.phoneNumbers.joined(separator: ", ")
-                    let contactString = "\(contact.displayName) - \(phones)"
-                    contactString.draw(at: CGPoint(x: 20, y: yOffset), withAttributes: textAttributes)
-                    yOffset += 20
                 }
             }
             return fileURL

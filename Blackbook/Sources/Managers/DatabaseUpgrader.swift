@@ -14,11 +14,16 @@ class DatabaseUpgrader {
                 let mutableContact = CNMutableContact()
                 mutableContact.givenName = contact.firstName
                 mutableContact.familyName = contact.lastName
+                mutableContact.organizationName = contact.organizationName
                 
                 for phone in contact.phoneNumbers {
                     let phoneNumber = CNPhoneNumber(stringValue: phone)
                     let labeledValue = CNLabeledValue(label: CNLabelPhoneNumberMain, value: phoneNumber)
                     mutableContact.phoneNumbers.append(labeledValue)
+                }
+                
+                if let thumbnail = contact.thumbnailData {
+                    mutableContact.imageData = thumbnail
                 }
                 
                 if let data = try? NSKeyedArchiver.archivedData(withRootObject: mutableContact, requiringSecureCoding: true) {

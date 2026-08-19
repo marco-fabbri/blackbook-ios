@@ -23,9 +23,11 @@ struct ContactEditView: View {
                 }
                 
                 Section(header: Text("Phone Numbers")) {
-                    ForEach(phoneNumbers.indices, id: \.self) { index in
-                        TextField("Phone", text: $phoneNumbers[index])
-                            .keyboardType(.phonePad)
+                    ForEach(0..<phoneNumbers.count, id: \.self) { index in
+                        if index < phoneNumbers.count {
+                            TextField("Phone", text: $phoneNumbers[index])
+                                .keyboardType(.phonePad)
+                        }
                     }
                     .onDelete { indices in
                         phoneNumbers.remove(atOffsets: indices)
@@ -93,6 +95,10 @@ struct ContactEditView: View {
             newPhoneValues.append(labeledValue)
         }
         mutableContact.phoneNumbers = newPhoneValues
+        
+        if let thumbnail = blackbookContact.avatarData {
+            mutableContact.imageData = thumbnail
+        }
         
         if let newData = try? NSKeyedArchiver.archivedData(withRootObject: mutableContact, requiringSecureCoding: true) {
             blackbookContact.contactData = newData

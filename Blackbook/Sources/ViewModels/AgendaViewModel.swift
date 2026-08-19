@@ -34,7 +34,11 @@ final class AgendaViewModel: ObservableObject {
     }
     
     func sortedKeys(for groupedContacts: [String: [BlackbookContact]]) -> [String] {
-        return groupedContacts.keys.sorted()
+        return groupedContacts.keys.sorted { key1, key2 in
+            if key1 == "#" { return false }
+            if key2 == "#" { return true }
+            return key1.localizedCaseInsensitiveCompare(key2) == .orderedAscending
+        }
     }
     
     // Intents / Actions

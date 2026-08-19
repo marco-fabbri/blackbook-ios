@@ -30,7 +30,7 @@ struct BlackbookApp: App {
                 }
             }
             .preferredColorScheme(colorScheme)
-            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)) { _ in
                 let isFaceIDEnabled = UserDefaults.standard.bool(forKey: "isFaceIDEnabled")
                 if isFaceIDEnabled {
                     authManager.isAuthenticated = false

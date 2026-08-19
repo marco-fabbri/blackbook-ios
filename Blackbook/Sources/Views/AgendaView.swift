@@ -23,7 +23,7 @@ struct AgendaView: View {
             contact.firstName.localizedCaseInsensitiveContains(searchText) ||
             contact.lastName.localizedCaseInsensitiveContains(searchText) ||
             contact.organizationName.localizedCaseInsensitiveContains(searchText) ||
-            (contact.phoneNumbers.first?.contains(searchText) ?? false)
+            contact.phoneNumbers.contains { $0.localizedCaseInsensitiveContains(searchText) }
         }
     }
     
