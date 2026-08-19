@@ -1,5 +1,10 @@
 # Blackbook
 
+[![iOS CI](https://github.com/marco-fabbri/blackbook-ios/actions/workflows/ios.yml/badge.svg)](https://github.com/marco-fabbri/blackbook-ios/actions/workflows/ios.yml)
+![iOS 17.0+](https://img.shields.io/badge/iOS-17.0%2B-blue.svg)
+![Swift](https://img.shields.io/badge/Swift-5.9%2B-orange.svg)
+![Architecture](https://img.shields.io/badge/Architecture-MVVM-purple.svg)
+
 Blackbook is a privacy-first iOS application designed to manage a secondary, secure address book parallel to your system's contacts. 
 
 > **Note:** This project was originally created as a playground to test and demonstrate the capabilities of the **Antigravity CLI** and its AI-driven development workflows. I'm open-sourcing it so that anyone interested can fork it, explore the code, or use it as a foundation for their own projects.
