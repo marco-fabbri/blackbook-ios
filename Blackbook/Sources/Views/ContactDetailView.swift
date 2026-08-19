@@ -17,7 +17,7 @@ struct ContactDetailView: View {
             VStack(spacing: 20) {
                 // Header
                 VStack(spacing: 12) {
-                    if let data = blackbookContact.thumbnailData, let uiImage = UIImage(data: data) {
+                    if let data = blackbookContact.avatarData, let uiImage = UIImage(data: data) {
                         Image(uiImage: uiImage)
                             .resizable()
                             .scaledToFill()

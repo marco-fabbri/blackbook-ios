@@ -136,7 +136,12 @@ struct AgendaView: View {
                 HStack(spacing: 16) {
                     Button(action: {
                         withAnimation {
-                            currentEditMode = currentEditMode.isEditing ? .inactive : .active
+                            if currentEditMode.isEditing {
+                                viewModel.selectedContactIDs.removeAll()
+                                currentEditMode = .inactive
+                            } else {
+                                currentEditMode = .active
+                            }
                         }
                     }) {
                         Text(currentEditMode.isEditing ? "Done" : "Edit")
@@ -206,7 +211,7 @@ struct AgendaRowView: View {
     var body: some View {
         HStack(spacing: 14) {
             if showImages {
-                if let imageData = contact.thumbnailData ?? extractImage(from: contact.contactData), let uiImage = UIImage(data: imageData) {
+                if let imageData = contact.avatarData, let uiImage = UIImage(data: imageData) {
                     Image(uiImage: uiImage)
                         .resizable()
                         .scaledToFill()
@@ -231,20 +236,6 @@ struct AgendaRowView: View {
             }
         }
         .padding(.vertical, 4)
-    }
-    
-    private func extractImage(from data: Data?) -> Data? {
-        guard let data = data,
-              let contact = try? NSKeyedUnarchiver.unarchivedObject(ofClass: CNContact.self, from: data) else {
-            return nil
-        }
-        if contact.isKeyAvailable(CNContactThumbnailImageDataKey) {
-            return contact.thumbnailImageData
-        }
-        if contact.isKeyAvailable(CNContactImageDataKey) {
-            return contact.imageData
-        }
-        return nil
     }
 }
 

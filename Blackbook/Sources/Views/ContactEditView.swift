@@ -73,25 +73,29 @@ struct ContactEditView: View {
         blackbookContact.phoneNumbers = cleanedPhones
         
         // Update CNContact data archive so exports/restores reflect changes
+        let mutableContact: CNMutableContact
         if let data = blackbookContact.contactData,
            let oldContact = try? NSKeyedUnarchiver.unarchivedObject(ofClass: CNContact.self, from: data),
-           let mutableContact = oldContact.mutableCopy() as? CNMutableContact {
-            
-            mutableContact.givenName = firstName
-            mutableContact.familyName = lastName
-            mutableContact.organizationName = organizationName
-            
-            var newPhoneValues: [CNLabeledValue<CNPhoneNumber>] = []
-            for phone in cleanedPhones {
-                let cnPhone = CNPhoneNumber(stringValue: phone)
-                let labeledValue = CNLabeledValue(label: CNLabelPhoneNumberMobile, value: cnPhone)
-                newPhoneValues.append(labeledValue)
-            }
-            mutableContact.phoneNumbers = newPhoneValues
-            
-            if let newData = try? NSKeyedArchiver.archivedData(withRootObject: mutableContact, requiringSecureCoding: true) {
-                blackbookContact.contactData = newData
-            }
+           let copy = oldContact.mutableCopy() as? CNMutableContact {
+            mutableContact = copy
+        } else {
+            mutableContact = CNMutableContact()
+        }
+        
+        mutableContact.givenName = firstName
+        mutableContact.familyName = lastName
+        mutableContact.organizationName = organizationName
+        
+        var newPhoneValues: [CNLabeledValue<CNPhoneNumber>] = []
+        for phone in cleanedPhones {
+            let cnPhone = CNPhoneNumber(stringValue: phone)
+            let labeledValue = CNLabeledValue(label: CNLabelPhoneNumberMobile, value: cnPhone)
+            newPhoneValues.append(labeledValue)
+        }
+        mutableContact.phoneNumbers = newPhoneValues
+        
+        if let newData = try? NSKeyedArchiver.archivedData(withRootObject: mutableContact, requiringSecureCoding: true) {
+            blackbookContact.contactData = newData
         }
         
         try? modelContext.save()

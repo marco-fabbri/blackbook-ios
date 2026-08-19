@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import Contacts
 
 @Model
 final class BlackbookContact {
@@ -22,12 +23,31 @@ final class BlackbookContact {
         return fullName
     }
     
+    var avatarData: Data? {
+        if let thumbnailData { return thumbnailData }
+        guard let contactData,
+              let contact = try? NSKeyedUnarchiver.unarchivedObject(ofClass: CNContact.self, from: contactData) else {
+            return nil
+        }
+        if contact.isKeyAvailable(CNContactThumbnailImageDataKey), let data = contact.thumbnailImageData {
+            return data
+        }
+        if contact.isKeyAvailable(CNContactImageDataKey), let data = contact.imageData {
+            return data
+        }
+        return nil
+    }
+    
     var sortName: String {
+        let sortOrder = UserDefaults.standard.string(forKey: "sortOrder") ?? "Last Name"
+        return sortName(for: sortOrder)
+    }
+    
+    func sortName(for sortOrder: String) -> String {
         if firstName.isEmpty && lastName.isEmpty && !organizationName.isEmpty {
             return organizationName
         }
         
-        let sortOrder = UserDefaults.standard.string(forKey: "sortOrder") ?? "Last Name"
         if sortOrder == "First Name" {
             return firstName.isEmpty ? lastName : firstName
         } else {
@@ -36,7 +56,12 @@ final class BlackbookContact {
     }
     
     var sortInitial: String {
-        guard let firstChar = sortName.first else { return "#" }
+        let sortOrder = UserDefaults.standard.string(forKey: "sortOrder") ?? "Last Name"
+        return sortInitial(for: sortOrder)
+    }
+    
+    func sortInitial(for sortOrder: String) -> String {
+        guard let firstChar = sortName(for: sortOrder).first else { return "#" }
         return String(firstChar).uppercased()
     }
     

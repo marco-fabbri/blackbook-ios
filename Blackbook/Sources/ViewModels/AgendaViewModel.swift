@@ -28,13 +28,9 @@ final class AgendaViewModel: ObservableObject {
     // Formatting & Grouping
     func groupedContacts(from contacts: [BlackbookContact], sortOrder: String) -> [String: [BlackbookContact]] {
         let sorted = contacts.sorted {
-            if sortOrder == "First Name" {
-                return $0.sortName < $1.sortName
-            } else {
-                return $0.sortName < $1.sortName
-            }
+            $0.sortName(for: sortOrder).localizedCaseInsensitiveCompare($1.sortName(for: sortOrder)) == .orderedAscending
         }
-        return Dictionary(grouping: sorted, by: { $0.sortInitial })
+        return Dictionary(grouping: sorted, by: { $0.sortInitial(for: sortOrder) })
     }
     
     func sortedKeys(for groupedContacts: [String: [BlackbookContact]]) -> [String] {

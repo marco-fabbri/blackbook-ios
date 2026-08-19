@@ -85,10 +85,23 @@ final class ContactSyncService {
             throw SyncError.accessDenied
         }
         
-        guard let data = blackbookContact.contactData,
-              let systemContact = try? NSKeyedUnarchiver.unarchivedObject(ofClass: CNContact.self, from: data),
-              let mutableContact = systemContact.mutableCopy() as? CNMutableContact else {
-            throw SyncError.unarchivingFailed
+        let mutableContact: CNMutableContact
+        if let data = blackbookContact.contactData,
+           let systemContact = try? NSKeyedUnarchiver.unarchivedObject(ofClass: CNContact.self, from: data),
+           let copy = systemContact.mutableCopy() as? CNMutableContact {
+            mutableContact = copy
+        } else {
+            let fallback = CNMutableContact()
+            fallback.givenName = blackbookContact.firstName
+            fallback.familyName = blackbookContact.lastName
+            fallback.organizationName = blackbookContact.organizationName
+            fallback.phoneNumbers = blackbookContact.phoneNumbers.map {
+                CNLabeledValue(label: CNLabelPhoneNumberMobile, value: CNPhoneNumber(stringValue: $0))
+            }
+            if let thumbnail = blackbookContact.avatarData {
+                fallback.imageData = thumbnail
+            }
+            mutableContact = fallback
         }
         
         let saveRequest = CNSaveRequest()

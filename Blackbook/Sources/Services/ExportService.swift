@@ -11,14 +11,15 @@ final class ExportService {
     
     // Generates a CSV file URL
     func generateCSV(from contacts: [BlackbookContact]) -> URL? {
-        var csvText = "First Name,Last Name,Phone\n"
+        var csvText = "First Name,Last Name,Company,Phone Numbers\n"
         
         for contact in contacts {
             let firstName = contact.firstName.replacingOccurrences(of: ",", with: " ")
             let lastName = contact.lastName.replacingOccurrences(of: ",", with: " ")
-            let phone = contact.phoneNumbers.first?.replacingOccurrences(of: ",", with: " ") ?? ""
+            let company = contact.organizationName.replacingOccurrences(of: ",", with: " ")
+            let phones = contact.phoneNumbers.joined(separator: "; ").replacingOccurrences(of: ",", with: " ")
             
-            csvText.append("\(firstName),\(lastName),\(phone)\n")
+            csvText.append("\(firstName),\(lastName),\(company),\(phones)\n")
         }
         
         let tempDir = FileManager.default.temporaryDirectory
@@ -73,8 +74,8 @@ final class ExportService {
                         yOffset = 20
                     }
                     
-                    let phone = contact.phoneNumbers.first ?? "No phone number"
-                    let contactString = "\(contact.firstName) \(contact.lastName) - \(phone)"
+                    let phones = contact.phoneNumbers.isEmpty ? "No phone number" : contact.phoneNumbers.joined(separator: ", ")
+                    let contactString = "\(contact.displayName) - \(phones)"
                     contactString.draw(at: CGPoint(x: 20, y: yOffset), withAttributes: textAttributes)
                     yOffset += 20
                 }

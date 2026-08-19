@@ -16,11 +16,7 @@ final class TrashViewModel: ObservableObject {
     // Formatting
     func sortContacts(_ contacts: [BlackbookContact], sortOrder: String) -> [BlackbookContact] {
         return contacts.sorted {
-            if sortOrder == "First Name" {
-                return $0.sortName < $1.sortName
-            } else {
-                return $0.sortName < $1.sortName
-            }
+            $0.sortName(for: sortOrder).localizedCaseInsensitiveCompare($1.sortName(for: sortOrder)) == .orderedAscending
         }
     }
     

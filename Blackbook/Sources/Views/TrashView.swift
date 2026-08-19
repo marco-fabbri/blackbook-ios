@@ -99,6 +99,7 @@ struct TrashView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: {
                         withAnimation {
+                            viewModel.selectedContactIDs.removeAll()
                             currentEditMode = .inactive
                         }
                     }) {
@@ -158,7 +159,7 @@ struct TrashRowView: View {
     var body: some View {
         HStack(spacing: 14) {
             if showImages {
-                if let imageData = contact.thumbnailData, let uiImage = UIImage(data: imageData) {
+                if let imageData = contact.avatarData, let uiImage = UIImage(data: imageData) {
                     Image(uiImage: uiImage)
                         .resizable()
                         .scaledToFill()
